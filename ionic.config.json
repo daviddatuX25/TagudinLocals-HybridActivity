@@ -1,0 +1,7 @@
+{
+  "name": "AfterClass",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
