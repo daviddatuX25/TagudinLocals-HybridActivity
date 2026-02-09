@@ -35,3 +35,21 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/* Global Pastel Theme Styles */
+body {
+  background-color: var(--bg-page);
+}
+
+ion-content {
+  --background: var(--bg-secondary);
+}
+
+/* Custom utility classes for pastel theme */
+.pastel-bg-primary { background-color: var(--pastel-primary) !important; }
+.pastel-bg-secondary { background-color: var(--pastel-secondary) !important; }
+.pastel-bg-accent { background-color: var(--pastel-accent) !important; }
+
+.text-primary { color: var(--text-primary) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-accent { color: var(--text-accent) !important; }
