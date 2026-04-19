@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Shopping Cart</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="cartItems.length > 0; else emptyCart">
+    <ion-list class="cart-list">
+      <ion-item *ngFor="let item of cartItems" class="cart-item">
+        <ion-thumbnail slot="start">
+          <img [src]="item.product.image" [alt]="item.product.name" />
+        </ion-thumbnail>
+        
+        <ion-label>
+          <h2>{{ item.product.name }}</h2>
+          <p>₱{{ item.product.price }} each</p>
+          
+          <div class="quantity-controls">
+            <ion-button 
+              size="small" 
+              fill="outline" 
+              (click)="decreaseQuantity(item.product.id)">
+              <ion-icon name="remove" slot="icon-only"></ion-icon>
+            </ion-button>
+            <span class="quantity">{{ item.quantity }}</span>
+            <ion-button 
+              size="small" 
+              fill="outline" 
+              (click)="increaseQuantity(item.product.id)">
+              <ion-icon name="add" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-label>
+        
+        <div slot="end" class="item-end">
+          <div class="item-total">₱{{ getItemTotal(item) }}</div>
+          <ion-button 
+            fill="clear" 
+            color="danger" 
+            (click)="removeItem(item.product.id)">
+            <ion-icon name="trash" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+    </ion-list>
+
+    <!-- Summary Card -->
+    <ion-card class="summary-card">
+      <ion-card-content>
+        <div class="summary-row">
+          <span>Subtotal ({{ cartItems.length }} items)</span>
+          <span class="amount">₱{{ subtotal }}</span>
+        </div>
+        <div class="summary-row note">
+          <span>Delivery fee will be calculated at checkout</span>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <ion-button expand="block" (click)="continueShopping()">
+        Continue Shopping
+      </ion-button>
+      <ion-button expand="block" (click)="proceedToDelivery()">
+        Proceed to Delivery
+      </ion-button>
+    </div>
+  </div>
+
+  <ng-template #emptyCart>
+    <div class="empty-cart">
+      <ion-icon name="cart-outline" class="empty-icon"></ion-icon>
+      <h2>Your cart is empty</h2>
+      <p>Add some products to get started!</p>
+      <ion-button (click)="continueShopping()">
+        Browse Products
+      </ion-button>
+    </div>
+  </ng-template>
+</ion-content>

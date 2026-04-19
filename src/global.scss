@@ -34,7 +34,7 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* @import '@ionic/angular/css/palettes/dark.system.css'; */
 
 /* Global Pastel Theme Styles */
 body {
@@ -43,6 +43,21 @@ body {
 
 ion-content {
   --background: var(--bg-secondary);
+}
+
+/* Safe area insets for mobile devices */
+ion-header {
+  ion-toolbar {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+}
+
+ion-content {
+  --padding-bottom: env(safe-area-inset-bottom);
+}
+
+ion-footer {
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 /* Custom utility classes for pastel theme */

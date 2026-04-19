@@ -1,0 +1,143 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/delivery"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Checkout</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form #checkoutForm="ngForm" (ngSubmit)="onSubmit(checkoutForm)">
+    
+    <!-- Customer Information -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Customer Information</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-input
+              label="Full Name"
+              labelPlacement="floating"
+              [(ngModel)]="customerName"
+              name="customerName"
+              type="text"
+              required
+              placeholder="Enter your full name">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="call-outline" slot="start"></ion-icon>
+            <ion-input
+              label="Contact Number"
+              labelPlacement="floating"
+              [(ngModel)]="contactNumber"
+              name="contactNumber"
+              type="tel"
+              required
+              placeholder="09XX XXX XXXX">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-input
+              label="Email (Optional)"
+              labelPlacement="floating"
+              [(ngModel)]="email"
+              name="email"
+              type="email"
+              placeholder="your.email@example.com">
+            </ion-input>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Delivery Information -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Delivery Information</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-icon name="location-outline" slot="start"></ion-icon>
+            <ion-input
+              label="City/Municipality"
+              labelPlacement="floating"
+              [(ngModel)]="location"
+              name="location"
+              type="text"
+              required
+              placeholder="e.g., Vigan City">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="location-outline" slot="start"></ion-icon>
+            <ion-textarea
+              label="Complete Delivery Address"
+              labelPlacement="floating"
+              [(ngModel)]="deliveryAddress"
+              name="deliveryAddress"
+              required
+              rows="3"
+              placeholder="House No., Street, Barangay">
+            </ion-textarea>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Order Summary -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Order Summary</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="order-items">
+          <div class="item-row" *ngFor="let item of cartItems">
+            <span>{{ item.product.name }} x{{ item.quantity }}</span>
+            <span>₱{{ item.product.price * item.quantity }}</span>
+          </div>
+        </div>
+
+        <div class="summary-section">
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>₱{{ subtotal }}</span>
+          </div>
+          
+          <div class="summary-row" *ngIf="deliveryService">
+            <span>Delivery ({{ deliveryService.name }})</span>
+            <span>₱{{ deliveryFee }}</span>
+          </div>
+          
+          <div class="summary-row total">
+            <span>Total Amount</span>
+            <span>₱{{ total }}</span>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Submit Button -->
+    <ion-button 
+      expand="block" 
+      type="submit" 
+      [disabled]="!checkoutForm.valid">
+      <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+      Place Order
+    </ion-button>
+
+    <p class="terms-text">
+      By placing this order, you agree to our terms and conditions. 
+      You will receive a confirmation once your order is processed.
+    </p>
+  </form>
+</ion-content>

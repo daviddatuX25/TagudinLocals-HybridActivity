@@ -1,12 +1,13 @@
 .modern-header {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(212, 196, 168, 0.3);
 }
 
 .gradient-toolbar {
-  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --color: white;
-  --min-height: 70px;
-  padding: 8px 0;
+  --background: linear-gradient(135deg, #F5ECD7 0%, #FFE5CC 100%);
+  --color: var(--text-primary);
+  --min-height: 80px;
+  padding: 12px 0;
+  padding-top: env(safe-area-inset-top, 12px);
 }
 
 .header-content {
@@ -16,12 +17,17 @@
   padding: 0 16px;
   max-width: 1400px;
   margin: 0 auto;
+  width: 100%;
+  gap: 8px;
 }
 
 .logo-section {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .store-icon {
@@ -46,44 +52,55 @@
   flex-direction: column;
   gap: 2px;
   padding: 0;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .title-main {
   font-size: 24px;
   font-weight: 800;
   letter-spacing: -0.5px;
-  background: linear-gradient(to right, #fff, #f0f0f0);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-accent);
   margin-right: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .title-subtitle {
   font-size: 11px;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-secondary);
   letter-spacing: 0.5px;
   text-transform: uppercase;
   margin-left: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header-actions {
   display: flex;
   gap: 20px;
   align-items: center;
+  flex-shrink: 0;
+}
+
+.cart-icon-wrapper {
+  position: relative;
+  display: inline-block;
 }
 
 .action-icon {
   position: relative;
   font-size: 24px;
-  color: white;
+  color: var(--text-accent);
   cursor: pointer;
   transition: all 0.3s ease;
   
   &:hover {
     transform: translateY(-2px) scale(1.1);
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    filter: drop-shadow(0 4px 8px rgba(212, 196, 168, 0.4));
   }
   
   &:active {
@@ -96,15 +113,15 @@
   position: absolute;
   top: -6px;
   right: -8px;
-  background: linear-gradient(135deg, #FF6B6B, #FF1744);
-  color: white;
+  background: var(--color-info);
+  color: var(--text-primary);
   font-size: 10px;
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 10px;
   min-width: 18px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(255, 23, 68, 0.4);
+  box-shadow: 0 2px 8px rgba(165, 201, 244, 0.4);
   animation: bounce 1s ease-in-out infinite;
 }
 
@@ -115,32 +132,95 @@
 
 /* Mobile responsive */
 @media (max-width: 576px) {
+  .gradient-toolbar {
+    --min-height: 75px;
+    padding: 8px 0;
+    padding-top: env(safe-area-inset-top, 8px);
+  }
+  
+  .header-content {
+    padding: 0 8px;
+  }
+  
+  .logo-section {
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+  
   .title-main {
-    font-size: 20px;
+    font-size: 16px;
   }
   
   .title-subtitle {
-    font-size: 9px;
+    font-size: 8px;
   }
   
   .store-icon {
-    font-size: 28px;
+    font-size: 26px;
+    flex-shrink: 0;
   }
   
   .action-icon {
-    font-size: 22px;
+    font-size: 24px;
+    flex-shrink: 0;
   }
   
   .header-actions {
-    gap: 16px;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  
+  .cart-badge {
+    font-size: 9px;
+    padding: 1px 4px;
+    min-width: 16px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 360px) {
+  .header-content {
+    padding: 0 4px;
+    gap: 4px;
+  }
+  
+  .logo-section {
+    gap: 6px;
+  }
+  
+  .title-main {
+    font-size: 14px;
+  }
+  
+  .title-subtitle {
+    display: none;
+  }
+  
+  .store-icon {
+    font-size: 22px;
+  }
+  
+  .action-icon {
+    font-size: 18px;
+  }
+  
+  .header-actions {
+    gap: 8px;
   }
 }
 
 .section-title {
-  margin: var(--spacing-sm) 0 var(--spacing-xs);
+  margin: 1rem 0 0.5rem;
   font-weight: 800;
   color: var(--text-primary);
   font-size: 1.5rem;
+}
+
+.section-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
 }
 
 ion-card-title { 
@@ -228,11 +308,11 @@ ion-card-title {
   font-size: 28px !important;
   width: 40px;
   height: 40px;
-  color: #9E9E9E !important;
+  color: var(--beige-dark) !important;
   cursor: pointer;
   z-index: 3;
   transition: all 0.2s ease;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--window-bg);
   border-radius: 50%;
   padding: 8px;
   backdrop-filter: blur(8px);
@@ -240,13 +320,13 @@ ion-card-title {
   
   &:hover {
     transform: scale(1.15);
-    background: #FFE5E5;
-    color: #FF6B6B !important;
+    background: var(--pastel-accent);
+    color: var(--color-error) !important;
   }
   
   &.active {
-    color: #FF1744 !important;
-    background: #FFE5E5;
+    color: var(--color-error) !important;
+    background: var(--pastel-accent);
     animation: heartBeat 0.3s ease;
   }
 }
@@ -284,9 +364,9 @@ ion-card-title {
   gap: 6px;
   margin: var(--spacing-sm) 0;
   padding: var(--spacing-xs) var(--spacing-sm);
-  background: #FFF9E6;
+  background: var(--pastel-secondary);
   border-radius: var(--radius-sm);
-  border: 1px solid #FFE082;
+  border: 1px solid var(--pastel-warning);
 }
 
 .stars {
@@ -298,7 +378,7 @@ ion-card-title {
   font-size: 16px !important;
   width: 16px !important;
   height: 16px !important;
-  color: #FFB300 !important;
+  color: var(--color-warning) !important;
   --ionicon-stroke-width: 50px !important;
 }
 
@@ -338,6 +418,95 @@ ion-card-title {
   border: 1px solid var(--tag-border);
 }
 
+/* Category Filter Toolbar */
+.category-toolbar {
+  --background: var(--pastel-secondary);
+  --border-width: 0 0 1px 0;
+  --border-color: var(--border-color);
+}
+
+.category-chips {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  overflow-x: auto;
+  
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+  }
+}
+
+ion-chip {
+  --background: var(--window-bg);
+  --color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    --background: var(--tag-hover);
+  }
+  
+  &.chip-selected {
+    --background: var(--pastel-accent);
+    --color: var(--text-accent);
+    border-color: var(--tag-border);
+    font-weight: 600;
+  }
+}
+
+/* Available Badge */
+.available-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: var(--color-success);
+  color: var(--text-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(168, 213, 186, 0.4);
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  text-align: center;
+  padding: 2rem;
+  
+  .empty-icon {
+    font-size: 80px;
+    color: var(--beige-dark);
+    margin-bottom: 1rem;
+  }
+  
+  h3 {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    color: var(--text-secondary);
+    opacity: 0.7;
+  }
+}
+
 /* Category pill colors with pastel theme */
 .pill {
   &.fashion {
@@ -362,5 +531,60 @@ ion-card-title {
     background: #F3E5F5;
     border-color: #D1A3D9;
     color: #8E24AA;
+  }
+  
+  &.groceries {
+    background: #E8F5E9;
+    border-color: #A5D6A7;
+    color: #388E3C;
+  }
+  
+  &.seafood {
+    background: #E1F5FE;
+    border-color: #81D4FA;
+    color: #0277BD;
+  }
+  
+  &.bakery {
+    background: #FFF8E1;
+    border-color: #FFE082;
+    color: #F57F17;
+  }
+  
+  &.fruits {
+    background: #FCE4EC;
+    border-color: #F8BBD0;
+    color: #C2185B;
+  }
+  
+  &.food {
+    background: #FFEBEE;
+    border-color: #FFCDD2;
+    color: #C62828;
+  }
+  
+  &.meat {
+    background: #FBE9E7;
+    border-color: #FFCCBC;
+    color: #D84315;
+  }
+  
+  &.beverages {
+    background: #E0F2F1;
+    border-color: #B2DFDB;
+    color: #00695C;
+  }
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .product-img {
+    height: 200px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-img {
+    height: 220px;
   }
 }

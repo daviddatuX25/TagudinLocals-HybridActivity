@@ -9,7 +9,11 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "android": "cap open android",
+    "build:android": "npm run build && npx cap sync android",
+    "ios": "cap open ios",
+    "build:ios": "npm run build && npx cap sync ios"
   },
   "private": true,
   "dependencies": {
@@ -21,8 +25,9 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
+    "@capacitor/android": "^8.1.0",
     "@capacitor/app": "8.0.0",
-    "@capacitor/core": "8.0.2",
+    "@capacitor/core": "^8.1.0",
     "@capacitor/haptics": "8.0.0",
     "@capacitor/keyboard": "8.0.0",
     "@capacitor/status-bar": "8.0.0",

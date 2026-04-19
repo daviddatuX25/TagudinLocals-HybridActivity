@@ -4,75 +4,100 @@
       <div class="logo-section">
         <ion-icon name="storefront" class="store-icon"></ion-icon>
         <ion-title class="modern-title">
-          <span class="title-main">AfterClass</span>
-          <span class="title-subtitle">Students on the go</span>
+          <span class="title-main">Tagudin Products</span>
+          <span class="title-subtitle">Local Products Delivery</span>
         </ion-title>
       </div>
       
       <div class="header-actions">
-        <ion-icon name="search-outline" class="action-icon"></ion-icon>
-        <ion-icon name="notifications-outline" class="action-icon">
-          <span class="notification-badge">3</span>
-        </ion-icon>
-        <ion-icon name="cart-outline" class="action-icon">
-          <span class="cart-badge">5</span>
-        </ion-icon>
+        <ion-icon name="settings-outline" class="action-icon" routerLink="/admin" title="Admin Panel"></ion-icon>
+        <div class="cart-icon-wrapper">
+          <ion-icon name="cart-outline" class="action-icon" (click)="viewCart()"></ion-icon>
+          <ion-badge *ngIf="cartCount > 0" class="cart-badge">{{ cartCount }}</ion-badge>
+        </div>
+        <ion-icon name="log-out-outline" class="action-icon" routerLink="/landing" title="Exit"></ion-icon>
       </div>
+    </div>
+  </ion-toolbar>
+
+  <!-- Search Bar -->
+  <ion-toolbar>
+    <ion-searchbar 
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearchChange($event)"
+      placeholder="Search products..."
+      animated="true">
+    </ion-searchbar>
+  </ion-toolbar>
+
+  <!-- Category Filter -->
+  <ion-toolbar class="category-toolbar">
+    <div class="category-chips">
+      <ion-chip 
+        *ngFor="let category of categories" 
+        [class.chip-selected]="selectedCategory === category"
+        (click)="selectCategory(category)">
+        <ion-label>{{ category }}</ion-label>
+      </ion-chip>
     </div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <h2 class="section-title">Available Items</h2>
+  <h2 class="section-title">Fresh Local Products</h2>
+  <p class="section-subtitle">Support local farmers and businesses</p>
 
   <ion-grid>
     <ion-row>
-      <ion-col size="12" size-md="6" size-lg="3" *ngFor="let i of items">
+      <ion-col size="12" size-md="6" size-lg="3" *ngFor="let product of filteredProducts">
         <ion-card class="product-card">
-          <div class="tag" [ngClass]="i.tag.toLowerCase()">{{ i.tag }}</div>
+          <div class="available-badge" *ngIf="product.available">Available</div>
           
-          <!-- Wishlist Icon -->
-          <ion-icon 
-            [name]="i.isFavorite ? 'heart' : 'heart-outline'" 
-            class="wishlist-icon"
-            [class.active]="i.isFavorite"
-            (click)="toggleFavorite(i)">
-          </ion-icon>
-          
-          <img [src]="i.img" class="product-img" [alt]="i.name" />
+          <img [src]="product.image" class="product-img" [alt]="product.name" />
           
           <ion-card-header>
-            <ion-card-title>{{ i.name }}</ion-card-title>
+            <ion-card-title>{{ product.name }}</ion-card-title>
             
             <!-- Category Pill -->
-            <div class="pill" [ngClass]="i.category.toLowerCase()">{{ i.category }}</div>
+            <div class="pill">{{ product.category }}</div>
             
             <!-- Rating Display -->
-            <div class="rating-container">
+            <div class="rating-container" *ngIf="product.rating">
               <span class="stars">
                 <ion-icon 
-                  *ngFor="let star of [1,2,3,4,5]" 
-                  [name]="star <= i.rating ? 'star' : (star - 0.5 <= i.rating ? 'star-half' : 'star-outline')"
+                  *ngFor="let star of getStarArray(product.rating)" 
+                  [name]="star <= product.rating ? 'star' : (star - 0.5 <= product.rating ? 'star-half' : 'star-outline')"
                   class="star-icon">
                 </ion-icon>
               </span>
-              <span class="rating-text">{{ i.rating }}</span>
+              <span class="rating-text">{{ product.rating }}</span>
             </div>
             
-            <!-- Short Description -->
-            <p class="product-description">{{ i.description }}</p>
+            <!-- Description -->
+            <p class="product-description">{{ product.description }}</p>
             
-            <!-- Improved Price -->
-            <div class="price">₱{{ i.price }}</div>
+            <!-- Price -->
+            <div class="price">₱{{ product.price }}</div>
           </ion-card-header>
 
           <ion-card-content>
-            <ion-button size="small" expand="block">
-              Buy Now
+            <ion-button 
+              size="small" 
+              expand="block" 
+              (click)="addToCart(product, $event)"
+              [disabled]="!product.available">
+              <ion-icon name="add-circle" slot="start"></ion-icon>
+              Add to Cart
             </ion-button>
           </ion-card-content>
         </ion-card>
       </ion-col>
     </ion-row>
+
+    <div class="empty-state" *ngIf="filteredProducts.length === 0">
+      <ion-icon name="search-outline" class="empty-icon"></ion-icon>
+      <h3>No products found</h3>
+      <p>Try adjusting your search or filters</p>
+    </div>
   </ion-grid>
 </ion-content>

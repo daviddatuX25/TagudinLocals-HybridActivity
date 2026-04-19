@@ -1,0 +1,428 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/landing"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Admin Dashboard</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/landing">
+        <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="selectedSegment">
+      <ion-segment-button value="products">
+        <ion-icon name="cube-outline"></ion-icon>
+        <ion-label>Products</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="delivery">
+        <ion-icon name="bicycle-outline"></ion-icon>
+        <ion-label>Delivery Services</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="orders">
+        <ion-icon name="cart-outline"></ion-icon>
+        <ion-label>Orders</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- ==================== PRODUCTS SECTION ==================== -->
+  <div *ngIf="selectedSegment === 'products'" class="section-content">
+    <div class="section-header">
+      <h2>Manage Products</h2>
+      <ion-button (click)="openAddProductModal()" color="primary">
+        <ion-icon slot="start" name="add-outline"></ion-icon>
+        Add Product
+      </ion-button>
+    </div>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-md="6" size-lg="4" *ngFor="let product of products">
+          <ion-card class="product-card">
+            <ion-card-header>
+              <ion-card-title>{{ product.name }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <img [src]="product.image" class="product-image" [alt]="product.name" />
+              <p class="product-description">{{ product.description }}</p>
+              <div class="product-info">
+                <ion-badge [color]="product.available ? 'success' : 'danger'">
+                  {{ product.available ? 'Available' : 'Unavailable' }}
+                </ion-badge>
+                <ion-badge color="medium">Stock: {{ product.stock || 0 }}</ion-badge>
+                <ion-badge color="tertiary">{{ product.category }}</ion-badge>
+              </div>
+              <p class="price">₱{{ product.price }}</p>
+              <p class="delivery-services-info">
+                <strong>Delivery Services:</strong> {{ product.availableDeliveryServices?.length || 0 }} assigned
+              </p>
+            </ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <ion-col size="9">
+                </ion-col>
+                <ion-col size="3" class="action-buttons">
+                  <ion-button (click)="openEditProductModal(product)" fill="outline" size="small">
+                    <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button (click)="openDeliveryServicesModal(product)" fill="outline" size="small" class="OpenDelivery">
+                    <ion-icon slot="icon-only" name="bicycle-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button (click)="confirmDeleteProduct(product)" fill="outline" size="small" color="danger">
+                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                  </ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <div class="empty-state" *ngIf="products.length === 0">
+      <ion-icon name="cube-outline"></ion-icon>
+      <p>No products available. Add your first product!</p>
+    </div>
+  </div>
+
+  <!-- ==================== DELIVERY SERVICES SECTION ==================== -->
+  <div *ngIf="selectedSegment === 'delivery'" class="section-content">
+    <div class="section-header">
+      <h2>Delivery Services</h2>
+    </div>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-md="6" *ngFor="let service of deliveryServices">
+          <ion-card class="delivery-card">
+            <ion-card-header>
+              <ion-card-title>{{ service.name }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <p>{{ service.description }}</p>
+              <div class="service-details">
+                <ion-badge color="primary">₱{{ service.pricing }}</ion-badge>
+                <ion-badge color="secondary">{{ service.estimatedTime }}</ion-badge>
+                <ion-badge color="tertiary">⭐ {{ service.rating }}</ion-badge>
+                <ion-badge [color]="service.available ? 'success' : 'danger'">
+                  {{ service.available ? 'Available' : 'Unavailable' }}
+                </ion-badge>
+              </div>
+              <div class="coverage-areas" *ngIf="service.coverageAreas && service.coverageAreas.length > 0">
+                <strong>Coverage Areas:</strong>
+                <div class="areas-list">
+                  <ion-chip *ngFor="let area of service.coverageAreas">
+                    <ion-label>{{ area }}</ion-label>
+                  </ion-chip>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <div class="empty-state" *ngIf="deliveryServices.length === 0">
+      <ion-icon name="bicycle-outline"></ion-icon>
+      <p>No delivery services configured.</p>
+    </div>
+  </div>
+
+  <!-- ==================== ORDERS SECTION ==================== -->
+  <div *ngIf="selectedSegment === 'orders'" class="section-content">
+    <div class="section-header">
+      <h2>Orders Management</h2>
+    </div>
+
+    <!-- Order Statistics -->
+    <ion-grid class="stats-grid">
+      <ion-row>
+        <ion-col size="6" size-md="3">
+          <ion-card class="stat-card">
+            <ion-card-content>
+              <h3>{{ getOrderCount() }}</h3>
+              <p>Total Orders</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6" size-md="3">
+          <ion-card class="stat-card">
+            <ion-card-content>
+              <h3>{{ getOrderCount('pending') }}</h3>
+              <p>Pending</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6" size-md="3">
+          <ion-card class="stat-card">
+            <ion-card-content>
+              <h3>{{ getOrderCount('delivered') }}</h3>
+              <p>Delivered</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6" size-md="3">
+          <ion-card class="stat-card">
+            <ion-card-content>
+              <h3>₱{{ getTotalRevenue() }}</h3>
+              <p>Revenue</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <!-- Orders List -->
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-md="6" *ngFor="let order of orders">
+          <ion-card class="order-card" (click)="openOrderDetailsModal(order)">
+            <ion-card-header>
+              <div class="order-header">
+                <h3>Order #{{ order.id.substring(0, 8) }}</h3>
+                <ion-badge [color]="getOrderStatusColor(order.status)">
+                  {{ order.status }}
+                </ion-badge>
+              </div>
+            </ion-card-header>
+            <ion-card-content>
+              <p class="customer-info"><strong>Customer:</strong> {{ order.customerInfo?.fullName || order.customerName || 'N/A' }}</p>
+              <p class="order-date"><strong>Date:</strong> {{ formatDate(order.orderDate) }}</p>
+              <p class="delivery-service">
+                <ion-icon name="bicycle-outline"></ion-icon>
+                {{ order.deliveryService?.name || (order.deliveryServiceId ? getDeliveryServiceName(order.deliveryServiceId) : 'N/A') }}
+              </p>
+              <div class="order-total">
+                <h2>₱{{ order.totalAmount }}</h2>
+                <p>{{ order.items.length }} item(s)</p>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <div class="empty-state" *ngIf="orders.length === 0">
+      <ion-icon name="cart-outline"></ion-icon>
+      <p>No orders yet.</p>
+    </div>
+  </div>
+</ion-content>
+
+<!-- ==================== PRODUCT MODAL ==================== -->
+<ion-modal [isOpen]="showProductModal" (didDismiss)="closeProductModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ isEditMode ? 'Edit Product' : 'Add Product' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeProductModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="modal-content">
+        <ion-list>
+          <ion-item>
+            <ion-input 
+              label="Product Name" 
+              labelPlacement="stacked"
+              [(ngModel)]="newProduct.name"
+              placeholder="Enter product name">
+            </ion-input>
+          </ion-item>
+          
+          <ion-item>
+            <ion-textarea 
+              label="Description"
+              labelPlacement="stacked"
+              [(ngModel)]="newProduct.description"
+              placeholder="Enter product description"
+              rows="3">
+            </ion-textarea>
+          </ion-item>
+          
+          <ion-item>
+            <ion-input 
+              label="Price (₱)"
+              labelPlacement="stacked"
+              type="number"
+              [(ngModel)]="newProduct.price"
+              placeholder="0.00">
+            </ion-input>
+          </ion-item>
+          
+          <ion-item>
+            <ion-input 
+              label="Image URL"
+              labelPlacement="stacked"
+              [(ngModel)]="newProduct.image"
+              placeholder="https://...">
+            </ion-input>
+          </ion-item>
+          
+          <ion-item>
+            <ion-input 
+              label="Category"
+              labelPlacement="stacked"
+              [(ngModel)]="newProduct.category"
+              placeholder="e.g., Vegetables, Fruits">
+            </ion-input>
+          </ion-item>
+          
+          <ion-item>
+            <ion-input 
+              label="Stock Quantity"
+              labelPlacement="stacked"
+              type="number"
+              [(ngModel)]="newProduct.stock"
+              placeholder="0">
+            </ion-input>
+          </ion-item>
+          
+          <ion-item>
+            <ion-checkbox [(ngModel)]="newProduct.available">Available for Sale</ion-checkbox>
+          </ion-item>
+        </ion-list>
+        
+        <div class="modal-buttons">
+          <ion-button expand="block" (click)="saveProduct()" color="primary">
+            <ion-icon slot="start" name="save-outline"></ion-icon>
+            {{ isEditMode ? 'Update Product' : 'Add Product' }}
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- ==================== DELIVERY SERVICES ASSIGNMENT MODAL ==================== -->
+<ion-modal [isOpen]="showDeliveryModal" (didDismiss)="closeDeliveryModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Assign Delivery Services</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeDeliveryModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="modal-content">
+        <div class="product-preview" *ngIf="selectedProductForDelivery">
+          <h3>{{ selectedProductForDelivery.name }}</h3>
+          <p>Select which delivery services are available for this product:</p>
+        </div>
+        
+        <ion-list>
+          <ion-item *ngFor="let service of deliveryServices">
+            <ion-checkbox 
+              slot="start" 
+              [checked]="isDeliveryServiceSelected(service.id)"
+              (ionChange)="toggleDeliveryService(service.id)">
+            </ion-checkbox>
+            <ion-label>
+              <h2>{{ service.name }}</h2>
+              <p>₱{{ service.pricing }} • {{ service.estimatedTime }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+        
+        <div class="modal-buttons">
+          <ion-button expand="block" (click)="saveDeliveryServices()" color="primary">
+            <ion-icon slot="start" name="save-outline"></ion-icon>
+            Save Changes
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- ==================== ORDER DETAILS MODAL ==================== -->
+<ion-modal [isOpen]="showOrderModal" (didDismiss)="closeOrderModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Order Details</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeOrderModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="modal-content" *ngIf="selectedOrder">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Order #{{ selectedOrder.id.substring(0, 8) }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p><strong>Status:</strong> 
+              <ion-button
+                *ngFor="let status of ['pending', 'confirmed', 'preparing', 'out-for-delivery', 'delivered', 'cancelled']"
+                [color]="selectedOrder.status === status ? getOrderStatusColor(status) : 'light'"
+                size="small"
+                fill="solid"
+                (click)="updateOrderStatus(selectedOrder.id, status)">
+                {{ status }}
+              </ion-button>
+            </p>
+            
+            <p><strong>Customer:</strong> {{ selectedOrder.customerInfo?.fullName || selectedOrder.customerName || 'N/A' }}</p>
+            <p><strong>Email:</strong> {{ selectedOrder.customerInfo?.email || selectedOrder.email || 'N/A' }}</p>
+            <p><strong>Phone:</strong> {{ selectedOrder.customerInfo?.phoneNumber || selectedOrder.contactNumber || 'N/A' }}</p>
+            <p><strong>Address:</strong> {{ selectedOrder.customerInfo?.deliveryAddress || selectedOrder.deliveryAddress || 'N/A' }}</p>
+            
+            <p><strong>Order Date:</strong> {{ formatDate(selectedOrder.orderDate) }}</p>
+            <p><strong>Delivery Service:</strong> {{ selectedOrder.deliveryService?.name || (selectedOrder.deliveryServiceId ? getDeliveryServiceName(selectedOrder.deliveryServiceId) : 'N/A') }}</p>
+            <p><strong>Delivery Fee:</strong> ₱{{ selectedOrder.deliveryService?.pricing || selectedOrder.deliveryFee || 0 }}</p>
+            
+            <h3>Order Items:</h3>
+            <div class="order-item" *ngFor="let item of selectedOrder.items">
+              <div class="item-info">
+                <h4>{{ item.product.name }}</h4>
+                <p>Quantity: {{ item.quantity }} × ₱{{ item.product.price }}</p>
+              </div>
+              <div class="item-total">₱{{ item.quantity * item.product.price }}</div>
+            </div>
+            
+            <div class="order-summary">
+              <div class="summary-row">
+                <span>Subtotal:</span>
+                <span>₱{{ selectedOrder?.subtotal || (selectedOrder.totalAmount - ((selectedOrder.deliveryService?.pricing ?? selectedOrder.deliveryFee) || 0)) }}</span>
+              </div>
+              <div class="summary-row">
+                <span>Delivery Fee:</span>
+                <span>₱{{ (selectedOrder.deliveryService?.pricing ?? selectedOrder.deliveryFee) || 0 }}</span>
+              </div>
+              <div class="summary-row total">
+                <strong>Total:</strong>
+                <strong>₱{{ selectedOrder.totalAmount }}</strong>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- ==================== DELETE CONFIRMATION ALERT ==================== -->
+<ion-alert
+  [isOpen]="showDeleteAlert"
+  header="Confirm Delete"
+  message="Are you sure you want to delete this product? This action cannot be undone."
+  [buttons]="alertButtons"
+  (didDismiss)="showDeleteAlert = false">
+</ion-alert>

@@ -1,0 +1,287 @@
+.landing-content {
+  --background: linear-gradient(135deg, #F5ECD7 0%, #FFE5CC 50%, #FFF8E7 100%);
+}
+
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.store-logo {
+  font-size: 80px;
+  color: #FFD700;
+  margin-bottom: 16px;
+  animation: pulse 2s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.4));
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1);
+    filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.4));
+  }
+  50% { 
+    transform: scale(1.1);
+    filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.6));
+  }
+}
+
+.app-title {
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--text-accent);
+  margin: 0 0 8px 0;
+  letter-spacing: -1px;
+}
+
+.app-subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.selection-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 32px;
+}
+
+.role-card {
+  background: var(--window-bg);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.8s ease-out;
+  animation-fill-mode: both;
+  
+  &:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-lg);
+  }
+
+  &.buyer-card {
+    animation-delay: 0.1s;
+    
+    &:hover {
+      border-color: #6B9F7F;
+    }
+  }
+
+  &.admin-card {
+    animation-delay: 0.2s;
+    
+    &:hover {
+      border-color: #8B6F47;
+    }
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+ion-card-header {
+  text-align: center;
+  padding-bottom: 8px;
+}
+
+.card-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  
+  ion-icon {
+    font-size: 40px;
+    color: white;
+  }
+}
+
+.buyer-icon {
+  background: linear-gradient(135deg, #6B9F7F 0%, #A8D5BA 100%);
+  box-shadow: 0 4px 16px rgba(107, 159, 127, 0.3);
+}
+
+.admin-icon {
+  background: linear-gradient(135deg, #8B6F47 0%, #9B8160 100%);
+  box-shadow: 0 4px 16px rgba(139, 111, 71, 0.3);
+}
+
+ion-card-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+ion-card-content {
+  padding: 16px 20px 20px;
+}
+
+.card-description {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+  
+  li {
+    padding: 8px 0;
+    color: var(--text-primary);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    
+    &:before {
+      content: "✓";
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-success);
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      line-height: 20px;
+      margin-right: 12px;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.enter-button {
+  margin-top: 8px;
+  font-weight: 600;
+  --border-radius: 8px;
+  height: 48px;
+  
+  span {
+    margin-right: 8px;
+  }
+}
+
+.buyer-button {
+  --background: linear-gradient(135deg, #6B9F7F 0%, #A8D5BA 100%);
+  --background-hover: linear-gradient(135deg, #5A8E6E 0%, #97C4A9 100%);
+  --background-activated: linear-gradient(135deg, #497D5D 0%, #86B398 100%);
+  --color: white;
+}
+
+.admin-button {
+  --background: linear-gradient(135deg, #8B6F47 0%, #9B8160 100%);
+  --background-hover: linear-gradient(135deg, #7A5E36 0%, #8A7050 100%);
+  --background-activated: linear-gradient(135deg, #694D25 0%, #795F40 100%);
+  --color: white;
+}
+
+.footer {
+  text-align: center;
+  animation: fadeIn 1s ease-out 0.5s;
+  animation-fill-mode: both;
+  
+  p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin: 0;
+    font-style: italic;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .app-title {
+    font-size: 32px;
+  }
+  
+  .store-logo {
+    font-size: 60px;
+  }
+  
+  .selection-cards {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-title {
+    font-size: 28px;
+  }
+  
+  .app-subtitle {
+    font-size: 14px;
+  }
+  
+  .store-logo {
+    font-size: 50px;
+  }
+  
+  .card-icon {
+    width: 60px;
+    height: 60px;
+    
+    ion-icon {
+      font-size: 30px;
+    }
+  }
+  
+  ion-card-title {
+    font-size: 20px;
+  }
+}

@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Order Confirmed</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="success-container" *ngIf="order">
+    <div class="success-icon-wrapper">
+      <ion-icon name="checkmark-circle" class="success-icon"></ion-icon>
+    </div>
+
+    <h1>Order Placed Successfully!</h1>
+    <p class="success-message">
+      Thank you for your order. We'll process it shortly and keep you updated.
+    </p>
+
+    <!-- Order Details Card -->
+    <ion-card class="order-details-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="receipt-outline"></ion-icon>
+          Order Details
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="detail-row">
+          <span class="label">Order ID:</span>
+          <span class="value">{{ order.id }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Customer:</span>
+          <span class="value">{{ order.customerName }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Contact:</span>
+          <span class="value">{{ order.contactNumber }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Delivery Address:</span>
+          <span class="value">{{ order.deliveryAddress }}, {{ order.location }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Delivery Service:</span>
+          <span class="value">{{ order.deliveryService?.name || 'N/A' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Est. Delivery Time:</span>
+          <span class="value">{{ order.deliveryService?.estimatedTime || 'N/A' }}</span>
+        </div>
+        <div class="detail-row total">
+          <span class="label">Total Amount:</span>
+          <span class="value">₱{{ order.totalAmount + (order.deliveryFee || 0) }}</span>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Order Items -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Order Items</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="item-row" *ngFor="let item of order.items">
+          <span>{{ item.product.name }} x{{ item.quantity }}</span>
+          <span>₱{{ item.product.price * item.quantity }}</span>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <ion-button expand="block" (click)="goHome()">
+        <ion-icon name="home" slot="start"></ion-icon>
+        Back to Home
+      </ion-button>
+    </div>
+
+    <p class="info-text">
+      We'll contact you shortly to confirm your order. 
+      Please keep your phone nearby.
+    </p>
+  </div>
+</ion-content>
