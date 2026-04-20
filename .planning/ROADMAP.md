@@ -10,6 +10,11 @@
 
 **Requirements:** BACK-01, BACK-02, BACK-03, BACK-04, BACK-05, BACK-06
 
+**Plans:** 1 plan
+
+Plans:
+- [ ] 01-01-PLAN.md -- Create Express server with LowDB persistence and 11-product seed data
+
 **Success Criteria:**
 1. `node server.js` starts without errors on port 3000
 2. GET /products returns 11 products as JSON (same items currently hardcoded)
@@ -53,8 +58,8 @@
 
 | Phase | Goal | Requirements | Success Criteria |
 |-------|------|--------------|------------------|
-| 1 | Backend API | BACK-01–06 | 5 |
-| 2 | Frontend Integration | PROD-01–05, CART-01–04, UI-01–03 | 6 |
-| 3 | Camera | CAM-01–04 | 4 |
+| 1 | Backend API | BACK-01-06 | 5 |
+| 2 | Frontend Integration | PROD-01-05, CART-01-04, UI-01-03 | 6 |
+| 3 | Camera | CAM-01-04 | 4 |
 
-**Coverage:** 18/18 requirements mapped ✓
+**Coverage:** 18/18 requirements mapped
