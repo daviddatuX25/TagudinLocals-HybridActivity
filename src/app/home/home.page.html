@@ -47,43 +47,68 @@
   <h2 class="section-title">Fresh Local Products</h2>
   <p class="section-subtitle">Support local farmers and businesses</p>
 
-  <ion-grid>
+  <!-- Loading skeleton -->
+  <ion-grid *ngIf="isLoading">
+    <ion-row>
+      <ion-col size="12" size-md="6" size-lg="3" *ngFor="let s of [1,2,3,4]">
+        <ion-card class="product-card">
+          <ion-thumbnail class="skeleton-thumbnail">
+            <ion-skeleton-text animated="true"></ion-skeleton-text>
+          </ion-thumbnail>
+          <ion-card-header>
+            <ion-card-title>
+              <ion-skeleton-text animated="true" style="width: 60%"></ion-skeleton-text>
+            </ion-card-title>
+            <ion-skeleton-text animated="true" style="width: 40%"></ion-skeleton-text>
+            <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text>
+            <ion-skeleton-text animated="true" style="width: 30%"></ion-skeleton-text>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-skeleton-text animated="true" style="width: 100%"></ion-skeleton-text>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Product grid (shown when not loading) -->
+  <ion-grid *ngIf="!isLoading">
     <ion-row>
       <ion-col size="12" size-md="6" size-lg="3" *ngFor="let product of filteredProducts">
         <ion-card class="product-card">
           <div class="available-badge" *ngIf="product.available">Available</div>
-          
+
           <img [src]="product.image" class="product-img" [alt]="product.name" />
-          
+
           <ion-card-header>
             <ion-card-title>{{ product.name }}</ion-card-title>
-            
+
             <!-- Category Pill -->
             <div class="pill">{{ product.category }}</div>
-            
+
             <!-- Rating Display -->
             <div class="rating-container" *ngIf="product.rating">
               <span class="stars">
-                <ion-icon 
-                  *ngFor="let star of getStarArray(product.rating)" 
+                <ion-icon
+                  *ngFor="let star of getStarArray(product.rating)"
                   [name]="star <= product.rating ? 'star' : (star - 0.5 <= product.rating ? 'star-half' : 'star-outline')"
                   class="star-icon">
                 </ion-icon>
               </span>
               <span class="rating-text">{{ product.rating }}</span>
             </div>
-            
+
             <!-- Description -->
             <p class="product-description">{{ product.description }}</p>
-            
+
             <!-- Price -->
             <div class="price">₱{{ product.price }}</div>
           </ion-card-header>
 
           <ion-card-content>
-            <ion-button 
-              size="small" 
-              expand="block" 
+            <ion-button
+              size="small"
+              expand="block"
               (click)="addToCart(product, $event)"
               [disabled]="!product.available">
               <ion-icon name="add-circle" slot="start"></ion-icon>
@@ -101,3 +126,13 @@
     </div>
   </ion-grid>
 </ion-content>
+
+<!-- Error toast -->
+<ion-toast
+  [isOpen]="showErrorToast"
+  [message]="errorMessage || 'Unable to load products'"
+  position="top"
+  color="danger"
+  [duration]="0"
+  [buttons]="[{ text: 'Retry', handler: retryLoad }]">
+</ion-toast>

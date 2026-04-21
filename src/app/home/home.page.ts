@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { 
-  heart, 
-  heartOutline, 
-  star, 
-  starHalf, 
+import {
+  heart,
+  heartOutline,
+  star,
+  starHalf,
   starOutline,
   storefront,
   searchOutline,
@@ -15,27 +15,32 @@ import {
   addCircle,
   chevronDown,
   logOutOutline,
-  settingsOutline
+  settingsOutline,
+  refreshOutline
 } from 'ionicons/icons';
-import { 
-  IonHeader, 
-  IonToolbar, 
-  IonTitle, 
-  IonContent, 
-  IonGrid, 
-  IonRow, 
-  IonCol, 
-  IonCard, 
-  IonCardHeader, 
-  IonCardTitle, 
-  IonCardContent, 
-  IonButton, 
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonButton,
   IonIcon,
   IonSearchbar,
   IonBadge,
   IonChip,
-  IonLabel
+  IonLabel,
+  IonToast,
+  IonSkeletonText,
+  IonThumbnail
 } from '@ionic/angular/standalone';
+import { Subscription } from 'rxjs';
 import { ProductService } from '../services/product.service';
 import { CartService } from '../services/cart.service';
 import { Product } from '../models/product.model';
@@ -65,28 +70,38 @@ import { Product } from '../models/product.model';
     IonSearchbar,
     IonBadge,
     IonChip,
-    IonLabel
+    IonLabel,
+    IonToast,
+    IonSkeletonText,
+    IonThumbnail
   ]
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   products: Product[] = [];
   filteredProducts: Product[] = [];
   categories: string[] = [];
   selectedCategory: string = 'All';
   searchQuery: string = '';
   cartCount: number = 0;
+  isLoading = false;
+  errorMessage: string | null = null;
+  showErrorToast = false;
+
+  private loadingSub: Subscription;
+  private errorSub: Subscription;
+  private productsSub: Subscription;
+  private cartSub: Subscription;
 
   constructor(
     private productService: ProductService,
     private cartService: CartService,
     private router: Router
   ) {
-    // Register all icons
-    addIcons({ 
-      heart, 
-      heartOutline, 
-      star, 
-      starHalf, 
+    addIcons({
+      heart,
+      heartOutline,
+      star,
+      starHalf,
       starOutline,
       storefront,
       searchOutline,
@@ -94,28 +109,39 @@ export class HomePage implements OnInit {
       addCircle,
       chevronDown,
       logOutOutline,
-      settingsOutline
+      settingsOutline,
+      refreshOutline
     });
-  }
 
-  ngOnInit() {
-    this.loadProducts();
-    this.categories = this.productService.getCategories();
-    
-    // Initialize cart count
-    this.cartCount = this.cartService.getCartCount();
-    
-    // Subscribe to cart changes
-    this.cartService.getCart().subscribe(() => {
+    this.loadingSub = this.productService.loading$.subscribe(loading => {
+      this.isLoading = loading;
+    });
+
+    this.errorSub = this.productService.error$.subscribe(error => {
+      this.errorMessage = error;
+      this.showErrorToast = !!error;
+    });
+
+    this.productsSub = this.productService.getAllProducts().subscribe(products => {
+      this.products = products;
+      this.categories = this.productService.getCategories();
+      this.filterProducts();
+    });
+
+    this.cartSub = this.cartService.getCart().subscribe(() => {
       this.cartCount = this.cartService.getCartCount();
     });
   }
 
-  loadProducts() {
-    this.productService.getAllProducts().subscribe(products => {
-      this.products = products;
-      this.filterProducts();
-    });
+  ngOnInit() {
+    this.cartCount = this.cartService.getCartCount();
+  }
+
+  ngOnDestroy() {
+    this.loadingSub.unsubscribe();
+    this.errorSub.unsubscribe();
+    this.productsSub.unsubscribe();
+    this.cartSub.unsubscribe();
   }
 
   onSearchChange(event: any) {
@@ -131,15 +157,13 @@ export class HomePage implements OnInit {
   filterProducts() {
     let filtered = this.products;
 
-    // Filter by category
     if (this.selectedCategory !== 'All') {
       filtered = filtered.filter(p => p.category === this.selectedCategory);
     }
 
-    // Filter by search query
     if (this.searchQuery.trim()) {
       const query = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.name.toLowerCase().includes(query) ||
         p.description.toLowerCase().includes(query)
       );
@@ -151,11 +175,15 @@ export class HomePage implements OnInit {
   addToCart(product: Product, event: Event) {
     event.stopPropagation();
     this.cartService.addToCart(product, 1);
-    // You could add a toast notification here
   }
 
   viewCart() {
     this.router.navigate(['/cart']);
+  }
+
+  retryLoad() {
+    this.showErrorToast = false;
+    this.productService.fetchProducts();
   }
 
   getStarArray(rating: number): number[] {
