@@ -674,7 +674,7 @@ app.use((err, req, res, next) => {
 | A4 | Product image URL should use full origin (http://localhost:3000/uploads/...) for display | Code Examples | If relative path is used, image won't display due to frontend/backend port difference. Medium risk -- verified by architecture (frontend on 4200, backend on 3000). |
 | A5 | Image preview in admin form can use the camera's webPath/URI directly (blob URL or data URL) | Architecture Patterns | These are temporary browser URLs that work for `<img [src]>`. Low risk. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should we use Ionic ActionSheet or simple buttons for camera vs gallery choice?**
    - What we know: CameraSource.Prompt is removed in v8. Need custom UI.
