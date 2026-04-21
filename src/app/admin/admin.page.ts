@@ -2,25 +2,29 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { 
+import { HttpClient } from '@angular/common/http';
+import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonSegment, IonSegmentButton,
   IonLabel, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton,
   IonIcon, IonList, IonItem, IonInput, IonTextarea,
   IonBadge, IonGrid, IonRow, IonCol, IonButtons, IonBackButton, IonAlert,
-  IonModal, IonCheckbox, IonChip
+  IonModal, IonCheckbox, IonChip, IonToast
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
+import {
   addOutline, createOutline, trashOutline, saveOutline, closeOutline,
   cartOutline, cubeOutline, bicycleOutline, checkmarkCircle, timeOutline,
-  checkmarkOutline, closeCircleOutline, logOutOutline
+  checkmarkOutline, closeCircleOutline, logOutOutline,
+  cameraOutline, imageOutline
 } from 'ionicons/icons';
+import { Camera } from '@capacitor/camera';
 import { ProductService } from '../services/product.service';
 import { DeliveryService } from '../services/delivery.service';
 import { OrderService } from '../services/order.service';
 import { Product } from '../models/product.model';
 import { DeliveryService as DeliveryServiceModel } from '../models/delivery-service.model';
 import { Order } from '../models/order.model';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-admin',
@@ -33,7 +37,7 @@ import { Order } from '../models/order.model';
     IonLabel, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton,
     IonIcon, IonList, IonItem, IonInput, IonTextarea,
     IonBadge, IonGrid, IonRow, IonCol, IonButtons, IonBackButton, IonAlert,
-    IonModal, IonCheckbox, IonChip
+    IonModal, IonCheckbox, IonChip, IonToast
   ]
 })
 export class AdminPage implements OnInit {
@@ -59,6 +63,12 @@ export class AdminPage implements OnInit {
   // Alert
   showDeleteAlert = false;
   itemToDelete: any = null;
+
+  // Camera and upload
+  imagePreview: string | null = null;
+  isUploading = false;
+  showErrorToast = false;
+  errorMessage: string | null = null;
   
   alertButtons = [
     {
@@ -79,12 +89,14 @@ export class AdminPage implements OnInit {
   constructor(
     private productService: ProductService,
     private deliveryService: DeliveryService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private http: HttpClient
   ) {
     addIcons({
       addOutline, createOutline, trashOutline, saveOutline, closeOutline,
       cartOutline, cubeOutline, bicycleOutline, checkmarkCircle, timeOutline,
-      checkmarkOutline, closeCircleOutline, logOutOutline
+      checkmarkOutline, closeCircleOutline, logOutOutline,
+      cameraOutline, imageOutline
     });
   }
 
@@ -114,12 +126,14 @@ export class AdminPage implements OnInit {
       stock: 0,
       availableDeliveryServices: []
     };
+    this.imagePreview = null;
     this.showProductModal = true;
   }
 
   openEditProductModal(product: Product) {
     this.isEditMode = true;
     this.newProduct = { ...product };
+    this.imagePreview = product.image || null;
     this.showProductModal = true;
   }
 
@@ -151,6 +165,7 @@ export class AdminPage implements OnInit {
     this.showProductModal = false;
     this.newProduct = {};
     this.isEditMode = false;
+    this.imagePreview = null;
   }
 
   // ==================== DELIVERY SERVICES MANAGEMENT ====================
@@ -254,5 +269,121 @@ export class AdminPage implements OnInit {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  // ==================== CAMERA & UPLOAD ====================
+
+  async takePhoto(): Promise<void> {
+    try {
+      const result = await Camera.takePhoto({
+        quality: 80,
+        webUseInput: true,
+        correctOrientation: true
+      });
+      if (result.webPath) {
+        await this.processAndUpload(result.webPath);
+      }
+    } catch (error: unknown) {
+      this.handleCameraError(error);
+    }
+  }
+
+  async pickFromGallery(): Promise<void> {
+    try {
+      const { results } = await Camera.chooseFromGallery({
+        limit: 1,
+        webUseInput: true
+      });
+      if (results.length > 0 && results[0].webPath) {
+        await this.processAndUpload(results[0].webPath);
+      }
+    } catch (error: unknown) {
+      this.handleCameraError(error);
+    }
+  }
+
+  private async processAndUpload(imagePath: string): Promise<void> {
+    this.imagePreview = imagePath;
+    this.isUploading = true;
+
+    try {
+      const blob = await this.resizeImage(imagePath, 800);
+      const formData = new FormData();
+      formData.append('image', blob, 'product.jpg');
+
+      this.http.post<{ url: string }>(
+        `${environment.apiUrl}/upload`,
+        formData
+      ).subscribe({
+        next: (response) => {
+          this.newProduct.image = `${environment.apiUrl}${response.url}`;
+          this.imagePreview = this.newProduct.image!;
+          this.isUploading = false;
+        },
+        error: () => {
+          this.errorMessage = 'Failed to upload image';
+          this.showErrorToast = true;
+          this.isUploading = false;
+        }
+      });
+    } catch (error: unknown) {
+      this.errorMessage = 'Failed to process image';
+      this.showErrorToast = true;
+      this.isUploading = false;
+    }
+  }
+
+  private async resizeImage(imagePath: string, maxSize: number): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxSize) {
+            height = Math.round((height * maxSize) / width);
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = Math.round((width * maxSize) / height);
+            height = maxSize;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => blob ? resolve(blob) : reject(new Error('toBlob failed')),
+          'image/jpeg',
+          0.8
+        );
+      };
+      img.onerror = () => reject(new Error('Image load failed'));
+      img.src = imagePath;
+    });
+  }
+
+  handleCameraError(error: unknown): void {
+    const err = error as any;
+    let message = 'Camera error occurred';
+
+    if (err?.code === 'OS-PLUG-CAMR-0003') {
+      message = 'Camera permission denied. Please enable camera access in settings.';
+    } else if (err?.code === 'OS-PLUG-CAMR-0006') {
+      return; // User cancelled -- don't show toast
+    } else if (err?.code === 'OS-PLUG-CAMR-0007') {
+      message = 'No camera available on this device';
+    } else if (err?.message) {
+      message = err.message;
+    }
+
+    this.errorMessage = message;
+    this.showErrorToast = true;
   }
 }

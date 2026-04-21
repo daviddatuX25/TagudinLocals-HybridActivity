@@ -282,7 +282,7 @@
     justify-content: space-between;
     margin: 8px 0;
     font-size: 14px;
-    
+
     &.total {
       font-size: 18px;
       margin-top: 12px;
@@ -290,5 +290,26 @@
       border-top: 1px solid var(--border-color);
       color: var(--text-accent);
     }
+  }
+}
+
+// ==================== CAMERA & IMAGE PREVIEW ====================
+
+.image-preview-container {
+  text-align: center;
+  margin: 8px 16px 16px;
+  position: relative;
+
+  .image-preview-img {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: var(--radius-sm, 8px);
+  }
+
+  ion-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
   }
 }

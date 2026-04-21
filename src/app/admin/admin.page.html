@@ -260,13 +260,24 @@
           </ion-item>
           
           <ion-item>
-            <ion-input 
+            <ion-input
               label="Image URL"
               labelPlacement="stacked"
               [(ngModel)]="newProduct.image"
-              placeholder="https://...">
+              placeholder="https://... or use camera/gallery">
             </ion-input>
+            <ion-button slot="end" fill="clear" (click)="takePhoto()" [disabled]="isUploading" title="Take Photo">
+              <ion-icon slot="icon-only" name="camera-outline"></ion-icon>
+            </ion-button>
+            <ion-button slot="end" fill="clear" (click)="pickFromGallery()" [disabled]="isUploading" title="Choose from Gallery">
+              <ion-icon slot="icon-only" name="image-outline"></ion-icon>
+            </ion-button>
           </ion-item>
+
+          <div class="image-preview-container" *ngIf="imagePreview">
+            <img [src]="imagePreview" alt="Product image preview" class="image-preview-img" />
+            <ion-badge *ngIf="isUploading" color="warning">Uploading...</ion-badge>
+          </div>
           
           <ion-item>
             <ion-input 
@@ -426,3 +437,13 @@
   [buttons]="alertButtons"
   (didDismiss)="showDeleteAlert = false">
 </ion-alert>
+
+<!-- ==================== ERROR TOAST ==================== -->
+<ion-toast
+  [isOpen]="showErrorToast"
+  [message]="errorMessage || 'An error occurred'"
+  position="top"
+  color="danger"
+  [duration]="4000"
+  (didDismiss)="showErrorToast = false">
+</ion-toast>
