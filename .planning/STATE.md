@@ -7,7 +7,7 @@
 See: .planning/PROJECT.md (updated 2026-04-20)
 
 **Core value:** The app must fetch products dynamically from a running backend API and successfully add items to cart via POST
-**Current focus:** Phase 2 — Frontend API Integration
+**Current focus:** Phase 3 — Camera Integration
 
 ## Phase Status
 
@@ -15,7 +15,7 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 |-------|--------|-------|----------|
 | 1 | Complete | 1/1 | 100% |
 | 2 | Complete | 1/1 | 100% |
-| 3 | ○ | 0/0 | 0% |
+| 3 | Discussing | 0/0 | 0% |
 
 ## Workflow Config
 
@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 - Research: yes
 - Plan Check: yes
 - Verifier: yes
-- Last Activity: 2026-04-21 (Phase 2 complete)
+- Last Activity: 2026-04-21 (Phase 3 discuss)
 
 ## Decisions
 
@@ -34,3 +34,7 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 - Graceful degradation: localStorage still works if API is down
 - Admin CRUD methods kept localStorage-only per scope
 - API cart items enriched with Product data from ProductService
+- Camera in admin form only (not customer-facing)
+- Full upload flow: resize to 800x800 → POST /upload → file stored on server → URL in product.image
+- IonToast danger for camera errors (consistent with Phase 2 pattern)
+- Built-in web fallback via @capacitor/camera
