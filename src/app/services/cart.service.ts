@@ -7,6 +7,8 @@ import { CartItem } from '../models/cart-item.model';
 import { Product } from '../models/product.model';
 
 interface ApiCartItem {
+  id: string;
+  sessionId: string;
   productId: string;
   name: string;
   price: number;
@@ -21,12 +23,22 @@ export class CartService {
   private cartSubject = new BehaviorSubject<CartItem[]>(this.cartItems);
   public cart$ = this.cartSubject.asObservable();
 
+  private sessionId: string;
+  private apiItemIdMap = new Map<string, string>();
+
   constructor(private http: HttpClient) {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      this.cartItems = JSON.parse(savedCart);
-      this.cartSubject.next([...this.cartItems]);
+    this.sessionId = localStorage.getItem('cartSessionId') || '';
+    if (!this.sessionId) {
+      this.sessionId = crypto.randomUUID();
+      localStorage.setItem('cartSessionId', this.sessionId);
     }
+
+    // Load cart from API on init
+    this.syncCartFromApi();
+  }
+
+  private getSessionId(): string {
+    return this.sessionId;
   }
 
   getCart(): Observable<CartItem[]> {
@@ -34,80 +46,71 @@ export class CartService {
   }
 
   addToCart(product: Product, quantity: number = 1): void {
-    const payload: ApiCartItem = {
+    const sessionId = this.getSessionId();
+    const payload = {
       productId: product.id,
       name: product.name,
       price: product.price,
       quantity
     };
 
-    this.http.post(`${environment.apiUrl}/cart`, payload).pipe(
+    this.http.post<ApiCartItem>(`${environment.apiUrl}/cart/${sessionId}`, payload).pipe(
       tap(() => {
-        // API success: update in-memory + localStorage (dual-write)
-        this.applyAddToCart(product, quantity);
+        this.syncCartFromApi();
       }),
       catchError(() => {
-        // API failure: still update localStorage (graceful degradation)
+        // Graceful degradation: still update locally if API fails
         this.applyAddToCart(product, quantity);
-        return [];
-      })
-    ).subscribe();
-  }
-
-  syncCartFromApi(products: Product[]): void {
-    this.http.get<ApiCartItem[]>(`${environment.apiUrl}/cart`).pipe(
-      tap(apiItems => {
-        const apiCartItems: CartItem[] = apiItems.map(apiItem => {
-          const product = products.find(p => p.id === String(apiItem.productId));
-          const enrichedProduct: Product = product
-            ? { ...product }
-            : {
-                id: String(apiItem.productId),
-                name: apiItem.name,
-                price: apiItem.price,
-                description: '',
-                image: '',
-                category: '',
-                available: true
-              };
-          return { product: enrichedProduct, quantity: apiItem.quantity };
-        });
-
-        // Merge: localStorage items take precedence; add API items not in localStorage
-        const localIds = new Set(this.cartItems.map(i => i.product.id));
-        const merged = [
-          ...this.cartItems,
-          ...apiCartItems.filter(apiItem => !localIds.has(apiItem.product.id))
-        ];
-
-        this.cartItems = merged;
-        this.cartSubject.next([...this.cartItems]);
-        localStorage.setItem('cart', JSON.stringify(this.cartItems));
-      }),
-      catchError(() => {
-        // If API fails, just keep localStorage cart
         return [];
       })
     ).subscribe();
   }
 
   removeFromCart(productId: string): void {
-    this.cartItems = this.cartItems.filter(item => item.product.id !== productId);
-    this.updateCart();
+    const sessionId = this.getSessionId();
+    const item = this.cartItems.find(i => i.product.id === productId);
+
+    if (item) {
+      // Find the API item ID (the cart item's product.id maps to the API item)
+      const apiItemId = this.findApiItemId(productId);
+
+      this.http.delete(`${environment.apiUrl}/cart/${sessionId}/${apiItemId}`).pipe(
+        tap(() => {
+          this.syncCartFromApi();
+        }),
+        catchError(() => {
+          // Graceful degradation: update locally
+          this.cartItems = this.cartItems.filter(i => i.product.id !== productId);
+          this.updateCart();
+          return [];
+        })
+      ).subscribe();
+    }
   }
 
   updateQuantity(productId: string, quantity: number): void {
-    const item = this.cartItems.find(i => i.product.id === productId);
-    if (item) {
-      if (quantity <= 0) {
-        this.removeFromCart(productId);
-      } else {
+    const sessionId = this.getSessionId();
+
+    if (quantity <= 0) {
+      this.removeFromCart(productId);
+      return;
+    }
+
+    const apiItemId = this.findApiItemId(productId);
+
+    this.http.patch<ApiCartItem>(`${environment.apiUrl}/cart/${sessionId}/${apiItemId}`, { quantity }).pipe(
+      tap(() => {
+        this.syncCartFromApi();
+      }),
+      catchError(() => {
+        // Graceful degradation: update locally
         this.cartItems = this.cartItems.map(i =>
           i.product.id === productId ? { ...i, quantity } : i
         );
         this.updateCart();
-      }
-    }
+        return [];
+      })
+    ).subscribe();
   }
 
   clearCart(): void {
@@ -121,6 +124,46 @@ export class CartService {
 
   getCartTotal(): number {
     return this.cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+  }
+
+  syncCartFromApi(): void {
+    const sessionId = this.getSessionId();
+    this.http.get<ApiCartItem[]>(`${environment.apiUrl}/cart/${sessionId}`).pipe(
+      tap(apiItems => {
+        // Build mapping from productId to API item ID for PATCH/DELETE operations
+        this.apiItemIdMap.clear();
+        this.cartItems = apiItems.map(apiItem => {
+          this.apiItemIdMap.set(String(apiItem.productId), apiItem.id);
+          return {
+            product: {
+              id: String(apiItem.productId),
+              name: apiItem.name,
+              price: apiItem.price,
+              description: '',
+              image: '',
+              category: '',
+              available: true,
+              stock: 0
+            } as Product,
+            quantity: apiItem.quantity
+          };
+        });
+        this.updateCart();
+      }),
+      catchError(() => {
+        // If API fails, keep current cart
+        return [];
+      })
+    ).subscribe();
+  }
+
+  private findApiItemId(productId: string): string {
+    // The API cart item id is stored in the cart items from the last sync.
+    // For items synced from API, we need to track the API item ID.
+    // Since the API returns items with their own id, we need a mapping.
+    // We store the mapping in a private field.
+    const apiId = this.apiItemIdMap.get(productId);
+    return apiId || productId;
   }
 
   private applyAddToCart(product: Product, quantity: number): void {

@@ -26,7 +26,6 @@ import {
   IonCardContent
 } from '@ionic/angular/standalone';
 import { CartService } from '../services/cart.service';
-import { ProductService } from '../services/product.service';
 import { CartItem } from '../models/cart-item.model';
 
 @Component({
@@ -58,16 +57,12 @@ export class CartPage implements OnInit {
 
   constructor(
     private cartService: CartService,
-    private productService: ProductService,
     private router: Router
   ) {
     addIcons({ arrowBack, trash, add, remove, cartOutline });
   }
 
   ngOnInit() {
-    // Sync cart from API, enriching with product data from ProductService
-    this.cartService.syncCartFromApi(this.productService.getProducts());
-
     this.loadCart();
   }
 
