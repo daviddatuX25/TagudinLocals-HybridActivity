@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Product } from '../models/product.model';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,7 @@ export class ProductService {
   private errorSubject = new BehaviorSubject<string | null>(null);
   public error$ = this.errorSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private authService: AuthService) {
     this.fetchProducts();
   }
 
@@ -72,49 +73,44 @@ export class ProductService {
     return ['All', ...Array.from(new Set(categories))];
   }
 
-  // Admin methods (localStorage-only, out of scope for API integration)
+  // Admin methods (API-first)
   getProducts(): Product[] {
     return this.products;
   }
 
-  addProduct(product: Omit<Product, 'id'>): Product {
-    const newProduct: Product = {
-      ...product,
-      id: this.generateProductId(),
-      availableDeliveryServices: product.availableDeliveryServices || []
-    };
-    this.products = [...this.products, newProduct];
-    this.productsSubject.next([...this.products]);
-    this.saveProducts();
-    return newProduct;
+  addProduct(product: Omit<Product, 'id'>): void {
+    const headers = this.authService.getPinHeader();
+    this.http.post<Product>(`${environment.apiUrl}/api/admin/products`, product, { headers }).pipe(
+      tap(() => {
+        this.fetchProducts();
+      }),
+      catchError(() => {
+        return of(null);
+      })
+    ).subscribe();
   }
 
   updateProduct(id: string, updates: Partial<Product>): void {
-    const index = this.products.findIndex(p => p.id === id);
-    if (index !== -1) {
-      this.products = this.products.map((p, i) =>
-        i === index ? { ...p, ...updates } : p
-      );
-      this.productsSubject.next([...this.products]);
-      this.saveProducts();
-    }
+    const headers = this.authService.getPinHeader();
+    this.http.put<Product>(`${environment.apiUrl}/api/admin/products/${id}`, updates, { headers }).pipe(
+      tap(() => {
+        this.fetchProducts();
+      }),
+      catchError(() => {
+        return of(null);
+      })
+    ).subscribe();
   }
 
   deleteProduct(id: string): void {
-    this.products = this.products.filter(p => p.id !== id);
-    this.productsSubject.next([...this.products]);
-    this.saveProducts();
-  }
-
-  private generateProductId(): string {
-    const maxId = this.products.reduce((max, p) => {
-      const id = parseInt(p.id, 10);
-      return id > max ? id : max;
-    }, 0);
-    return (maxId + 1).toString();
-  }
-
-  private saveProducts(): void {
-    localStorage.setItem('products', JSON.stringify(this.products));
+    const headers = this.authService.getPinHeader();
+    this.http.delete(`${environment.apiUrl}/api/admin/products/${id}`, { headers }).pipe(
+      tap(() => {
+        this.fetchProducts();
+      }),
+      catchError(() => {
+        return of(null);
+      })
+    ).subscribe();
   }
 }
