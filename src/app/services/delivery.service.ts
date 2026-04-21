@@ -1,51 +1,35 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { DeliveryService as DeliveryServiceModel } from '../models/delivery-service.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DeliveryService {
-  private deliveryServices: DeliveryServiceModel[] = [
-    {
-      id: '1',
-      name: 'QuickDeliver Express',
-      description: 'Fast and reliable delivery service covering major areas in Ilocos Sur',
-      coverageAreas: ['Sta. Cruz', 'Candon,', 'Sta. Lucia', 'Tagudin', 'Sudipen', 'Bangar'],
-      pricing: 50,
-      estimatedTime: '30-45 mins',
-      rating: 4.8,
-      image: 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=400',
-      available: true
-    },
-    {
-      id: '2',
-      name: 'Ilocos Local Riders',
-      description: 'Supporting local communities with affordable delivery',
-      coverageAreas: ['Sta. Cruz', 'Candon,', 'Sta. Lucia', 'Tagudin','Suyo', 'Alilem'],
-      pricing: 35,
-      estimatedTime: '45-60 mins',
-      rating: 4.5,
-      image: 'https://images.unsplash.com/photo-1526367790999-0150786686a2?w=400',
-      available: true
-    },
-    {
-      id: '3',
-      name: 'Same Day Delivery Co.',
-      description: 'Premium delivery service with same-day guarantee',
-      coverageAreas: ['Sta. Cruz', 'Candon,', 'Sta. Lucia', 'Tagudin', 'Sudipen', 'Bangar'],
-      pricing: 75,
-      estimatedTime: '20-30 mins',
-      rating: 4.9,
-      image: 'https://images.unsplash.com/photo-1605902711834-8b11c3e3ef2f?w=400',
-      available: true
-    },
-  ];
-
-  private servicesSubject = new BehaviorSubject<DeliveryServiceModel[]>(this.deliveryServices);
+  private deliveryServices: DeliveryServiceModel[] = [];
+  private servicesSubject = new BehaviorSubject<DeliveryServiceModel[]>([]);
   public services$ = this.servicesSubject.asObservable();
 
-  constructor() { }
+  constructor(private http: HttpClient) {
+    this.fetchServices();
+  }
+
+  private fetchServices(): void {
+    this.http.get<DeliveryServiceModel[]>(`${environment.apiUrl}/delivery-services`).pipe(
+      catchError(() => {
+        // If API fails, keep current data
+        return [];
+      })
+    ).subscribe((services: DeliveryServiceModel[]) => {
+      if (services && services.length > 0) {
+        this.deliveryServices = services;
+        this.servicesSubject.next([...this.deliveryServices]);
+      }
+    });
+  }
 
   getAllServices(): Observable<DeliveryServiceModel[]> {
     return this.services$;
@@ -59,18 +43,16 @@ export class DeliveryService {
     if (!location) {
       return this.deliveryServices;
     }
-    
+
     const lowercaseLocation = location.toLowerCase();
-    return this.deliveryServices.filter(service => 
-      service.available && service.coverageAreas.some(area => 
+    return this.deliveryServices.filter(service =>
+      service.available && service.coverageAreas.some(area =>
         area.toLowerCase().includes(lowercaseLocation)
       )
     );
   }
 
   getServicesByProductIds(productIds: string[]): DeliveryServiceModel[] {
-    // Return services that can deliver all products
-    // For simplicity, returning all available services
     return this.deliveryServices.filter(s => s.available);
   }
 }
