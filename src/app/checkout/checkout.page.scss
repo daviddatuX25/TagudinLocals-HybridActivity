@@ -5,6 +5,11 @@ ion-card {
 ion-card-title {
   font-size: 1.1rem;
   font-weight: 600;
+
+  .section-icon {
+    margin-right: 8px;
+    vertical-align: middle;
+  }
 }
 
 ion-list {
@@ -17,6 +22,52 @@ ion-item {
   margin-bottom: 0.5rem;
 }
 
+// ==================== DELIVERY METHOD ====================
+
+.delivery-option {
+  --padding-start: 8px;
+  --inner-padding-end: 8px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+
+  &.selected {
+    border-color: var(--ion-color-primary);
+    background: var(--ion-color-primary-contrast);
+  }
+
+  .delivery-radio {
+    margin-right: 12px;
+  }
+}
+
+.service-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.service-meta {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.service-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.no-services {
+  text-align: center;
+  padding: 16px;
+  color: var(--text-secondary);
+}
+
+// ==================== ORDER SUMMARY ====================
+
 .order-items {
   margin-bottom: 1rem;
   padding-bottom: 1rem;
@@ -28,11 +79,11 @@ ion-item {
   justify-content: space-between;
   margin-bottom: 0.5rem;
   font-size: 0.95rem;
-  
+
   span:first-child {
     color: var(--text-primary);
   }
-  
+
   span:last-child {
     font-weight: 600;
   }
@@ -47,7 +98,7 @@ ion-item {
   justify-content: space-between;
   margin-bottom: 0.75rem;
   font-size: 0.95rem;
-  
+
   &.total {
     padding-top: 0.75rem;
     margin-top: 0.5rem;
@@ -55,6 +106,11 @@ ion-item {
     font-weight: 700;
     font-size: 1.3rem;
     color: var(--text-accent);
+  }
+
+  .muted {
+    color: var(--text-secondary);
+    font-style: italic;
   }
 }
 

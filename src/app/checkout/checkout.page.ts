@@ -3,20 +3,23 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { 
+import {
   arrowBack,
   personOutline,
   callOutline,
   mailOutline,
   locationOutline,
-  checkmarkCircle
+  checkmarkCircle,
+  bicycleOutline,
+  star,
+  timeOutline
 } from 'ionicons/icons';
-import { 
-  IonHeader, 
-  IonToolbar, 
-  IonTitle, 
-  IonContent, 
-  IonButton, 
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonButton,
   IonIcon,
   IonButtons,
   IonBackButton,
@@ -27,10 +30,15 @@ import {
   IonList,
   IonItem,
   IonInput,
-  IonTextarea
+  IonTextarea,
+  IonRadioGroup,
+  IonRadio,
+  IonBadge,
+  IonLabel
 } from '@ionic/angular/standalone';
 import { CartService } from '../services/cart.service';
 import { OrderService } from '../services/order.service';
+import { DeliveryService as DeliveryServiceClass } from '../services/delivery.service';
 import { DeliveryService } from '../models/delivery-service.model';
 import { CartItem } from '../models/cart-item.model';
 
@@ -57,34 +65,42 @@ import { CartItem } from '../models/cart-item.model';
     IonList,
     IonItem,
     IonInput,
-    IonTextarea
+    IonTextarea,
+    IonRadioGroup,
+    IonRadio,
+    IonBadge,
+    IonLabel
   ]
 })
 export class CheckoutPage implements OnInit {
+  // Customer details
   customerName: string = '';
   contactNumber: string = '';
   email: string = '';
   deliveryAddress: string = '';
   location: string = '';
-  
+
+  // Cart & delivery
   cartItems: CartItem[] = [];
-  deliveryService: DeliveryService | null = null;
+  deliveryServices: DeliveryService[] = [];
+  selectedDeliveryService: DeliveryService | null = null;
   subtotal: number = 0;
   deliveryFee: number = 0;
   total: number = 0;
+  isSubmitting = false;
 
   constructor(
     private cartService: CartService,
     private orderService: OrderService,
+    private deliveryServiceClass: DeliveryServiceClass,
     private router: Router
   ) {
-    addIcons({ arrowBack, personOutline, callOutline, mailOutline, locationOutline, checkmarkCircle });
+    addIcons({ arrowBack, personOutline, callOutline, mailOutline, locationOutline, checkmarkCircle, bicycleOutline, star, timeOutline });
   }
 
   ngOnInit() {
     this.loadCartItems();
-    this.loadDeliveryService();
-    this.calculateTotals();
+    this.loadDeliveryServices();
   }
 
   loadCartItems() {
@@ -94,45 +110,49 @@ export class CheckoutPage implements OnInit {
     });
   }
 
-  loadDeliveryService() {
-    const savedService = sessionStorage.getItem('selectedDeliveryService');
-    if (savedService) {
-      this.deliveryService = JSON.parse(savedService);
-      this.calculateTotals();
-    } else {
-      // Redirect back if no delivery service selected
-      this.router.navigate(['/delivery']);
-    }
+  loadDeliveryServices() {
+    this.deliveryServiceClass.getAllServices().subscribe(services => {
+      this.deliveryServices = services;
+    });
+  }
+
+  selectDeliveryService(service: DeliveryService) {
+    this.selectedDeliveryService = service;
+    this.calculateTotals();
   }
 
   calculateTotals() {
     this.subtotal = this.cartService.getCartTotal();
-    this.deliveryFee = this.deliveryService?.pricing || 0;
+    this.deliveryFee = this.selectedDeliveryService?.pricing || 0;
     this.total = this.subtotal + this.deliveryFee;
   }
 
   onSubmit(form: NgForm) {
-    if (form.valid && this.deliveryService) {
+    if (form.valid && this.selectedDeliveryService && !this.isSubmitting) {
+      this.isSubmitting = true;
       this.orderService.createOrder(
         this.customerName,
         this.contactNumber,
         this.deliveryAddress,
         this.location,
         this.cartItems,
-        this.deliveryService,
+        this.selectedDeliveryService,
         this.email
-      ).subscribe(order => {
-        if (order) {
-          // Clear cart
-          this.cartService.clearCart();
-
-          // Clear session storage
-          sessionStorage.removeItem('selectedDeliveryService');
-
-          // Navigate to success page
-          this.router.navigate(['/order-success', order.id]);
+      ).subscribe({
+        next: (order) => {
+          if (order) {
+            this.cartService.clearCart();
+            this.router.navigate(['/order-success', order.id]);
+          }
+        },
+        error: () => {
+          this.isSubmitting = false;
         }
       });
     }
+  }
+
+  getStarArray(): number[] {
+    return [1, 2, 3, 4, 5];
   }
 }

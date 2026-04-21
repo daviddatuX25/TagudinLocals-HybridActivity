@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/delivery"></ion-back-button>
+      <ion-back-button defaultHref="/cart"></ion-back-button>
     </ion-buttons>
     <ion-title>Checkout</ion-title>
   </ion-toolbar>
@@ -9,11 +9,43 @@
 
 <ion-content class="ion-padding">
   <form #checkoutForm="ngForm" (ngSubmit)="onSubmit(checkoutForm)">
-    
-    <!-- Customer Information -->
+
+    <!-- Section 1: Delivery Method -->
     <ion-card>
       <ion-card-header>
-        <ion-card-title>Customer Information</ion-card-title>
+        <ion-card-title>
+          <ion-icon name="bicycle-outline" class="section-icon"></ion-icon>
+          Delivery Method
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-radio-group [(ngModel)]="selectedDeliveryService" (ngModelChange)="calculateTotals()" name="deliveryService">
+          <ion-item *ngFor="let service of deliveryServices" class="delivery-option" [class.selected]="selectedDeliveryService?.id === service.id">
+            <ion-radio [value]="service" class="delivery-radio"></ion-radio>
+            <ion-label>
+              <div class="service-name">{{ service.name }}</div>
+              <div class="service-meta">
+                <ion-badge color="primary">₱{{ service.pricing }}</ion-badge>
+                <ion-badge color="secondary">{{ service.estimatedTime }}</ion-badge>
+              </div>
+              <div class="service-desc">{{ service.description }}</div>
+            </ion-label>
+          </ion-item>
+        </ion-radio-group>
+
+        <div class="no-services" *ngIf="deliveryServices.length === 0">
+          <p>Loading delivery services...</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Section 2: Your Details -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="person-outline" class="section-icon"></ion-icon>
+          Your Details
+        </ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-list>
@@ -58,10 +90,13 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- Delivery Information -->
+    <!-- Section 3: Delivery Address -->
     <ion-card>
       <ion-card-header>
-        <ion-card-title>Delivery Information</ion-card-title>
+        <ion-card-title>
+          <ion-icon name="location-outline" class="section-icon"></ion-icon>
+          Delivery Address
+        </ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-list>
@@ -112,12 +147,17 @@
             <span>Subtotal</span>
             <span>₱{{ subtotal }}</span>
           </div>
-          
-          <div class="summary-row" *ngIf="deliveryService">
-            <span>Delivery ({{ deliveryService.name }})</span>
+
+          <div class="summary-row" *ngIf="selectedDeliveryService">
+            <span>Delivery ({{ selectedDeliveryService.name }})</span>
             <span>₱{{ deliveryFee }}</span>
           </div>
-          
+
+          <div class="summary-row" *ngIf="!selectedDeliveryService">
+            <span>Delivery</span>
+            <span class="muted">Select a delivery method</span>
+          </div>
+
           <div class="summary-row total">
             <span>Total Amount</span>
             <span>₱{{ total }}</span>
@@ -127,16 +167,16 @@
     </ion-card>
 
     <!-- Submit Button -->
-    <ion-button 
-      expand="block" 
-      type="submit" 
-      [disabled]="!checkoutForm.valid">
+    <ion-button
+      expand="block"
+      type="submit"
+      [disabled]="!checkoutForm.valid || !selectedDeliveryService || isSubmitting">
       <ion-icon name="checkmark-circle" slot="start"></ion-icon>
-      Place Order
+      {{ isSubmitting ? 'Placing Order...' : 'Place Order' }}
     </ion-button>
 
     <p class="terms-text">
-      By placing this order, you agree to our terms and conditions. 
+      By placing this order, you agree to our terms and conditions.
       You will receive a confirmation once your order is processed.
     </p>
   </form>

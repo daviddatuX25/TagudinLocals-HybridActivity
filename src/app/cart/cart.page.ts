@@ -96,12 +96,12 @@ export class CartPage implements OnInit {
   }
 
   continueShopping() {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/products']);
   }
 
   proceedToDelivery() {
     if (this.cartItems.length > 0) {
-      this.router.navigate(['/delivery']);
+      this.router.navigate(['/checkout']);
     }
   }
 
