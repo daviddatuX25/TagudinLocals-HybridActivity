@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonSegment, IonSegmentButton,
@@ -15,9 +14,10 @@ import {
   addOutline, createOutline, trashOutline, saveOutline, closeOutline,
   cartOutline, cubeOutline, bicycleOutline, checkmarkCircle, timeOutline,
   checkmarkOutline, closeCircleOutline, logOutOutline,
-  cameraOutline, imageOutline
+  cameraOutline, imageOutline, lockClosedOutline
 } from 'ionicons/icons';
 import { Camera } from '@capacitor/camera';
+import { AuthService } from '../services/auth.service';
 import { ProductService } from '../services/product.service';
 import { DeliveryService } from '../services/delivery.service';
 import { OrderService } from '../services/order.service';
@@ -32,7 +32,7 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./admin.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterLink,
+    CommonModule, FormsModule,
     IonHeader, IonToolbar, IonTitle, IonContent, IonSegment, IonSegmentButton,
     IonLabel, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton,
     IonIcon, IonList, IonItem, IonInput, IonTextarea,
@@ -42,7 +42,14 @@ import { environment } from '../../environments/environment';
 })
 export class AdminPage implements OnInit {
   selectedSegment: string = 'products';
-  
+
+  // PIN Authentication
+  showPinModal = true;
+  pinMode: 'setup' | 'verify' = 'setup';
+  pinInput = '';
+  pinError: string | null = null;
+  isPinLoading = false;
+
   // Products Management
   products: Product[] = [];
   editingProduct: Product | null = null;
@@ -87,6 +94,7 @@ export class AdminPage implements OnInit {
   ];
 
   constructor(
+    private authService: AuthService,
     private productService: ProductService,
     private deliveryService: DeliveryService,
     private orderService: OrderService,
@@ -96,12 +104,58 @@ export class AdminPage implements OnInit {
       addOutline, createOutline, trashOutline, saveOutline, closeOutline,
       cartOutline, cubeOutline, bicycleOutline, checkmarkCircle, timeOutline,
       checkmarkOutline, closeCircleOutline, logOutOutline,
-      cameraOutline, imageOutline
+      cameraOutline, imageOutline, lockClosedOutline
     });
   }
 
   ngOnInit() {
-    this.loadData();
+    if (this.authService.isAdminVerified()) {
+      this.showPinModal = false;
+      this.loadData();
+    } else {
+      this.authService.hasPinSet().subscribe(hasPin => {
+        this.pinMode = hasPin ? 'verify' : 'setup';
+        this.showPinModal = true;
+      });
+    }
+  }
+
+  submitPin() {
+    if (!this.pinInput || this.pinInput.length < 4) {
+      this.pinError = 'PIN must be at least 4 digits';
+      return;
+    }
+    this.isPinLoading = true;
+    this.pinError = null;
+
+    const pinObs = this.pinMode === 'setup'
+      ? this.authService.setupPin(this.pinInput)
+      : this.authService.verifyPin(this.pinInput);
+
+    pinObs.subscribe({
+      next: (success) => {
+        this.isPinLoading = false;
+        if (success) {
+          this.showPinModal = false;
+          this.pinInput = '';
+          this.loadData();
+        } else {
+          this.pinError = this.pinMode === 'setup' ? 'Failed to set PIN' : 'Incorrect PIN';
+        }
+      },
+      error: () => {
+        this.isPinLoading = false;
+        this.pinError = 'Connection error. Please try again.';
+      }
+    });
+  }
+
+  logoutAdmin() {
+    this.authService.logout();
+    this.pinMode = 'verify';
+    this.pinInput = '';
+    this.pinError = null;
+    this.showPinModal = true;
   }
 
   loadData() {

@@ -1,3 +1,53 @@
+// ==================== PIN MODAL ====================
+
+.pin-modal-content {
+  --background: var(--ion-background-color);
+}
+
+.pin-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  min-height: 60vh;
+  text-align: center;
+
+  .pin-icon {
+    font-size: 64px;
+    color: var(--ion-color-primary);
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    margin: 0 0 8px 0;
+    color: var(--text-primary);
+  }
+
+  .pin-subtitle {
+    color: var(--text-secondary);
+    margin: 0 0 24px 0;
+    font-size: 14px;
+  }
+
+  ion-list {
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 16px;
+  }
+
+  ion-button {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .pin-error {
+    color: var(--ion-color-danger);
+    margin-top: 12px;
+    font-size: 14px;
+  }
+}
+
 .section-content {
   padding: 16px;
 }
