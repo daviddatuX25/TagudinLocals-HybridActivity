@@ -10,10 +10,10 @@
 
 **Requirements:** BACK-01, BACK-02, BACK-03, BACK-04, BACK-05, BACK-06
 
-**Plans:** 1 plan
+**Plans:** 1 plan (complete)
 
 Plans:
-- [ ] 01-01-PLAN.md -- Create Express server with LowDB persistence and 11-product seed data
+- [x] 01-01-PLAN.md -- Create Express server with LowDB persistence and 11-product seed data
 
 **Success Criteria:**
 1. `node server.js` starts without errors on port 3000
@@ -29,6 +29,11 @@ Plans:
 **Goal:** Replace hardcoded product data with HTTP calls, wire add-to-cart to POST /cart, add loading/error states, ensure Android emulator compatibility.
 
 **Requirements:** PROD-01, PROD-02, PROD-03, PROD-04, PROD-05, CART-01, CART-02, CART-03, CART-04, UI-01, UI-02, UI-03
+
+**Plans:** 1 plan (complete)
+
+Plans:
+- [x] 02-01-PLAN.md -- Replace hardcoded data with API calls, wire cart to backend, add loading/error states
 
 **Success Criteria:**
 1. Home page loads products from http://localhost:3000/products (no hardcoded array in service)

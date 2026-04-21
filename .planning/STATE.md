@@ -1,20 +1,20 @@
 # State: TagudinLocals-HybridActivity
 
-**Updated:** 2026-04-20
+**Updated:** 2026-04-21
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-04-20)
 
 **Core value:** The app must fetch products dynamically from a running backend API and successfully add items to cart via POST
-**Current focus:** Phase 1 — Backend API
+**Current focus:** Phase 2 — Frontend API Integration
 
 ## Phase Status
 
 | Phase | Status | Plans | Progress |
 |-------|--------|-------|----------|
-| 1 | ○ | 0/0 | 0% |
-| 2 | ○ | 0/0 | 0% |
+| 1 | Complete | 1/1 | 100% |
+| 2 | Complete | 1/1 | 100% |
 | 3 | ○ | 0/0 | 0% |
 
 ## Workflow Config
@@ -25,3 +25,12 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 - Research: yes
 - Plan Check: yes
 - Verifier: yes
+- Last Activity: 2026-04-21 (Phase 2 complete)
+
+## Decisions
+
+- Used BehaviorSubject for loading/error state (reactive pattern consistent with products$)
+- Dual-write to API + localStorage on cart add for resilience
+- Graceful degradation: localStorage still works if API is down
+- Admin CRUD methods kept localStorage-only per scope
+- API cart items enriched with Product data from ProductService
