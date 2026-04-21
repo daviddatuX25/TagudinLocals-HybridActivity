@@ -46,6 +46,10 @@ export class CartService {
   }
 
   addToCart(product: Product, quantity: number = 1): void {
+    if (!product.available || product.stock === 0) {
+      return;
+    }
+
     const sessionId = this.getSessionId();
     const payload = {
       productId: product.id,

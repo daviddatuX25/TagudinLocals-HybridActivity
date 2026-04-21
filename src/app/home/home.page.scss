@@ -480,6 +480,20 @@ ion-chip {
   box-shadow: 0 2px 8px rgba(168, 213, 186, 0.4);
 }
 
+.out-of-stock-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: var(--color-error);
+  color: var(--text-light);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(239, 83, 80, 0.4);
+}
+
 /* Empty State */
 .empty-state {
   display: flex;
