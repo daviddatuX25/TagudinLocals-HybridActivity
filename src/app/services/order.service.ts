@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 import { Order, OrderStatus } from '../models/order.model';
 import { CartItem } from '../models/cart-item.model';
-import { DeliveryService } from '../models/delivery-service.model';
+import { DeliveryService as DeliveryServiceModel } from '../models/delivery-service.model';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,14 +16,7 @@ export class OrderService {
   private ordersSubject = new BehaviorSubject<Order[]>(this.orders);
   public orders$ = this.ordersSubject.asObservable();
 
-  constructor() {
-    // Load orders from localStorage
-    const savedOrders = localStorage.getItem('orders');
-    if (savedOrders) {
-      this.orders = JSON.parse(savedOrders);
-      this.ordersSubject.next(this.orders);
-    }
-  }
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   createOrder(
     customerName: string,
@@ -27,59 +24,59 @@ export class OrderService {
     deliveryAddress: string,
     location: string,
     items: CartItem[],
-    deliveryService: DeliveryService,
+    deliveryService: DeliveryServiceModel,
     email?: string
-  ): Order {
-    const subtotal = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-    const deliveryFee = deliveryService.pricing;
-    const totalAmount = subtotal + deliveryFee;
-    
-    const order: Order = {
-      id: this.generateOrderId(),
-      // Legacy fields for backward compatibility
-      customerName,
-      contactNumber,
-      email,
-      deliveryAddress,
-      location,
-      // New structured fields
+  ): Observable<Order | null> {
+    const deliveryServiceId = deliveryService.id;
+    const orderItems = items.map(item => ({
+      productId: item.product.id,
+      name: item.product.name,
+      price: item.product.price,
+      quantity: item.quantity
+    }));
+
+    const payload = {
+      items: orderItems,
       customerInfo: {
         fullName: customerName,
         phoneNumber: contactNumber,
-        email: email,
+        email: email || null,
         deliveryAddress: deliveryAddress
       },
-      items,
-      deliveryService,
-      deliveryServiceId: deliveryService.id,
-      subtotal,
-      totalAmount,
-      deliveryFee,
-      status: OrderStatus.PENDING,
-      createdAt: new Date(),
-      orderDate: new Date()
+      deliveryServiceId
     };
 
-    this.orders.unshift(order);
-    this.saveOrders();
-    return order;
+    return this.http.post<Order>(`${environment.apiUrl}/orders`, payload).pipe(
+      tap(order => {
+        this.orders = [order, ...this.orders];
+        this.ordersSubject.next([...this.orders]);
+      }),
+      catchError(() => {
+        return of(null);
+      })
+    );
   }
 
-  getOrders(): Observable<Order[]> {
+  getOrders(phoneNumber?: string): Observable<Order[]> {
+    const params = phoneNumber ? `?customer=${phoneNumber}` : '';
+    this.http.get<Order[]>(`${environment.apiUrl}/orders${params}`).pipe(
+      tap(orders => {
+        this.orders = orders;
+        this.ordersSubject.next([...this.orders]);
+      }),
+      catchError(() => {
+        return of([]);
+      })
+    ).subscribe();
     return this.orders$;
   }
 
-  getOrderById(id: string): Order | undefined {
-    return this.orders.find(o => o.id === id);
-  }
-
-  private generateOrderId(): string {
-    return 'ORD-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-  }
-
-  private saveOrders(): void {
-    localStorage.setItem('orders', JSON.stringify(this.orders));
-    this.ordersSubject.next(this.orders);
+  getOrderById(id: string): Observable<Order | null> {
+    return this.http.get<Order>(`${environment.apiUrl}/orders/${id}`).pipe(
+      catchError(() => {
+        return of(null);
+      })
+    );
   }
 
   // Admin methods
@@ -88,10 +85,17 @@ export class OrderService {
   }
 
   updateOrderStatus(orderId: string, status: Order['status']): void {
-    const order = this.orders.find(o => o.id === orderId);
-    if (order) {
-      order.status = status;
-      this.saveOrders();
-    }
+    const headers = this.authService.getPinHeader();
+    this.http.patch<Order>(`${environment.apiUrl}/api/admin/orders/${orderId}`, { status }, { headers }).pipe(
+      tap(updatedOrder => {
+        this.orders = this.orders.map(o =>
+          o.id === orderId ? { ...o, status } : o
+        );
+        this.ordersSubject.next([...this.orders]);
+      }),
+      catchError(() => {
+        return of(null);
+      })
+    ).subscribe();
   }
 }

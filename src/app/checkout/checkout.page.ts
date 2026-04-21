@@ -113,8 +113,7 @@ export class CheckoutPage implements OnInit {
 
   onSubmit(form: NgForm) {
     if (form.valid && this.deliveryService) {
-      // Create order
-      const order = this.orderService.createOrder(
+      this.orderService.createOrder(
         this.customerName,
         this.contactNumber,
         this.deliveryAddress,
@@ -122,16 +121,18 @@ export class CheckoutPage implements OnInit {
         this.cartItems,
         this.deliveryService,
         this.email
-      );
+      ).subscribe(order => {
+        if (order) {
+          // Clear cart
+          this.cartService.clearCart();
 
-      // Clear cart
-      this.cartService.clearCart();
-      
-      // Clear session storage
-      sessionStorage.removeItem('selectedDeliveryService');
+          // Clear session storage
+          sessionStorage.removeItem('selectedDeliveryService');
 
-      // Navigate to success page
-      this.router.navigate(['/order-success', order.id]);
+          // Navigate to success page
+          this.router.navigate(['/order-success', order.id]);
+        }
+      });
     }
   }
 }

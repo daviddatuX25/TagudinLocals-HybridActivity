@@ -55,10 +55,13 @@ export class OrderSuccessPage implements OnInit {
   ngOnInit() {
     const orderId = this.route.snapshot.paramMap.get('id');
     if (orderId) {
-      this.order = this.orderService.getOrderById(orderId) || null;
-    }
-    
-    if (!this.order) {
+      this.orderService.getOrderById(orderId).subscribe(order => {
+        this.order = order;
+        if (!this.order) {
+          this.router.navigate(['/home']);
+        }
+      });
+    } else {
       this.router.navigate(['/home']);
     }
   }
