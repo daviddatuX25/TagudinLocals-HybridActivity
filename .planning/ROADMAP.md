@@ -51,10 +51,10 @@ Plans:
 
 **Requirements:** CAM-01, CAM-02, CAM-03, CAM-04
 
-**Plans:** 1 plan
+**Plans:** 1 plan (complete)
 
 Plans:
-- [ ] 03-01-PLAN.md -- Add camera capture with upload pipeline and image preview in admin form
+- [x] 03-01-PLAN.md -- Add camera capture with upload pipeline and image preview in admin form
 
 **Success Criteria:**
 1. Camera button triggers photo capture on native device
