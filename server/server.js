@@ -53,9 +53,21 @@ const allowedOrigins = [
   'http://localhost:8100',
   'http://localhost:8000',
   'http://10.0.2.2:4200',
+  'https://localhost',        // Capacitor Android (androidScheme: https)
+  'capacitor://localhost',    // Capacitor iOS / native WebView
+  'ionic://localhost',        // Ionic WebView fallback
   'https://tagudinlocals-hybridactivity.onrender.com'
 ]
-app.use(cors({ origin: allowedOrigins }))
+// Native APK requests may send no Origin header — allow null origin too
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error(`CORS blocked: ${origin}`))
+    }
+  }
+}))
 app.use(express.json())
 app.use('/uploads', express.static(uploadsDir))
 
