@@ -53,7 +53,7 @@ const allowedOrigins = [
   'http://localhost:8100',
   'http://localhost:8000',
   'http://10.0.2.2:4200',
-  'https://tagudin-products.onrender.com'
+  'https://tagudinlocals-hybridactivity.onrender.com'
 ]
 app.use(cors({ origin: allowedOrigins }))
 app.use(express.json())

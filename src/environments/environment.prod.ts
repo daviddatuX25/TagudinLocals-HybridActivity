@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://tagudin-products.onrender.com'
+  apiUrl: 'https://tagudinlocals-hybridactivity.onrender.com'
 };
