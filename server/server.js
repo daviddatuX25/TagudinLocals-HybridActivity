@@ -3,19 +3,29 @@ import cors from 'cors'
 import { JSONFilePreset } from 'lowdb/node'
 import multer from 'multer'
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const uploadsDir = path.join(__dirname, 'uploads')
+
+const DATA_DIR = process.env.DATA_DIR || __dirname
+const uploadsDir = path.join(DATA_DIR, 'uploads')
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir)
+  fs.mkdirSync(uploadsDir, { recursive: true })
 }
 
 const app = express()
-const PORT = 3000
+const PORT = process.env.PORT || 3000
+
+// CR-03: Session tokens replace raw PIN in headers
+const adminSessions = new Map() // token -> { createdAt: number }
+const SESSION_TTL_MS = 8 * 60 * 60 * 1000 // 8 hours
+
+// CR-01: Mutex for order processing prevents race condition on stock
+let orderLock = false
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadsDir),
@@ -37,18 +47,39 @@ const upload = multer({
   }
 })
 
-// Middleware
-app.use(cors())
+// Middleware — CR-02: Restrict CORS to known origins
+const allowedOrigins = [
+  'http://localhost:4200',
+  'http://localhost:8100',
+  'http://localhost:8000',
+  'http://10.0.2.2:4200',
+  'https://tagudin-products.onrender.com'
+]
+app.use(cors({ origin: allowedOrigins }))
 app.use(express.json())
 app.use('/uploads', express.static(uploadsDir))
 
 // Initialize LowDB
 const defaultData = { products: [], cart: [], orders: [], deliveryServices: [], adminPin: null }
-const db = await JSONFilePreset('db.json', defaultData)
+const dbPath = path.join(DATA_DIR, 'db.json')
+const db = await JSONFilePreset(dbPath, defaultData)
 
 // ==================== ADMIN AUTH MIDDLEWARE ====================
+// CR-03: Accept session token OR raw PIN (backwards-compatible during migration)
 
 const adminAuth = async (req, res, next) => {
+  // Prefer session token
+  const token = req.headers['x-admin-token']
+  if (token) {
+    const session = adminSessions.get(token)
+    if (session && Date.now() - session.createdAt < SESSION_TTL_MS) {
+      return next()
+    }
+    adminSessions.delete(token)
+    return res.status(401).json({ error: 'Session expired' })
+  }
+
+  // Fallback: raw PIN (deprecated, will be removed)
   const pin = req.headers['x-admin-pin']
   if (!pin) {
     return res.status(401).json({ error: 'Admin auth required' })
@@ -112,7 +143,7 @@ app.post('/cart/:sessionId', async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields: productId, name, price, quantity' })
   }
 
-  // Check product stock
+  // Check product stock — WR-05: validate cumulative quantity
   const product = db.data.products.find(p => p.id === productId)
   if (product && product.stock !== undefined && product.stock <= 0) {
     return res.status(400).json({ error: 'Product out of stock' })
@@ -123,9 +154,17 @@ app.post('/cart/:sessionId', async (req, res) => {
   )
 
   if (existingItem) {
-    existingItem.quantity += quantity
+    const newQuantity = existingItem.quantity + quantity
+    if (product && product.stock !== undefined && newQuantity > product.stock) {
+      return res.status(400).json({ error: `Only ${product.stock - existingItem.quantity} more can be added (stock limit)`, available: product.stock, inCart: existingItem.quantity, requested: quantity })
+    }
+    existingItem.quantity = newQuantity
     await db.write()
     return res.json(existingItem)
+  }
+
+  if (product && product.stock !== undefined && quantity > product.stock) {
+    return res.status(400).json({ error: `Insufficient stock for ${product.name}`, available: product.stock, requested: quantity })
   }
 
   const newItem = { id: Date.now().toString(), sessionId, productId, name, price, quantity }
@@ -177,8 +216,12 @@ app.delete('/cart/:sessionId/:itemId', async (req, res) => {
 
 // ==================== ORDER ENDPOINTS ====================
 
-// POST /orders - create order with atomic stock deduction
+// POST /orders - create order with atomic stock deduction (CR-01: mutex lock)
 app.post('/orders', async (req, res) => {
+  if (orderLock) {
+    return res.status(429).json({ error: 'Another order is being processed. Please try again.' })
+  }
+  orderLock = true
   const { items, customerInfo, deliveryServiceId } = req.body
 
   if (!items || !Array.isArray(items) || items.length === 0) {
@@ -186,6 +229,7 @@ app.post('/orders', async (req, res) => {
   }
 
   if (!customerInfo || !customerInfo.fullName || !customerInfo.phoneNumber || !customerInfo.deliveryAddress) {
+    orderLock = false
     return res.status(400).json({ error: 'Missing required customer info: fullName, phoneNumber, deliveryAddress' })
   }
 
@@ -193,12 +237,15 @@ app.post('/orders', async (req, res) => {
   for (const item of items) {
     const product = db.data.products.find(p => p.id === item.productId)
     if (!product) {
+      orderLock = false
       return res.status(400).json({ error: `Product not found: ${item.productId}` })
     }
     if (product.stock !== undefined && product.stock <= 0) {
+      orderLock = false
       return res.status(400).json({ error: `Product out of stock: ${product.name}` })
     }
     if (product.stock !== undefined && item.quantity > product.stock) {
+      orderLock = false
       return res.status(400).json({ error: `Insufficient stock for ${product.name}`, available: product.stock, requested: item.quantity })
     }
   }
@@ -236,6 +283,7 @@ app.post('/orders', async (req, res) => {
 
   db.data.orders.push(order)
   await db.write()
+  orderLock = false
 
   res.status(201).json(order)
 })
@@ -262,7 +310,7 @@ app.get('/orders/:id', (req, res) => {
 
 // ==================== ADMIN PIN ENDPOINTS ====================
 
-// POST /api/admin/setup-pin
+// POST /api/admin/setup-pin — also returns session token
 app.post('/api/admin/setup-pin', async (req, res) => {
   const { pin } = req.body
   if (!pin || pin.length < 4) {
@@ -275,11 +323,24 @@ app.post('/api/admin/setup-pin', async (req, res) => {
   db.data.adminPin = await bcrypt.hash(pin, 10)
   await db.write()
 
-  res.json({ success: true })
+  const token = crypto.randomUUID()
+  adminSessions.set(token, { createdAt: Date.now() })
+
+  res.json({ success: true, token })
 })
 
-// POST /api/admin/verify-pin
+// POST /api/admin/verify-pin — CR-03: returns session token, WR-02: rate limited
+const pinAttempts = new Map() // ip -> { count, lockedUntil }
 app.post('/api/admin/verify-pin', async (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress
+  const attempt = pinAttempts.get(clientIp) || { count: 0, lockedUntil: 0 }
+
+  // WR-02: Rate limiting — lock after 5 failed attempts for 5 minutes
+  if (attempt.lockedUntil && Date.now() < attempt.lockedUntil) {
+    const remaining = Math.ceil((attempt.lockedUntil - Date.now()) / 1000)
+    return res.status(429).json({ error: `Too many attempts. Try again in ${remaining}s` })
+  }
+
   const { pin } = req.body
   if (!pin) {
     return res.status(400).json({ error: 'PIN is required' })
@@ -290,10 +351,21 @@ app.post('/api/admin/verify-pin', async (req, res) => {
 
   const valid = await bcrypt.compare(pin, db.data.adminPin)
   if (!valid) {
+    attempt.count += 1
+    if (attempt.count >= 5) {
+      attempt.lockedUntil = Date.now() + 5 * 60 * 1000 // 5 min lockout
+      attempt.count = 0
+    }
+    pinAttempts.set(clientIp, attempt)
     return res.status(401).json({ error: 'Invalid PIN' })
   }
 
-  res.json({ success: true })
+  // Success — issue session token
+  pinAttempts.delete(clientIp)
+  const token = crypto.randomUUID()
+  adminSessions.set(token, { createdAt: Date.now() })
+
+  res.json({ success: true, token })
 })
 
 // GET /api/admin/has-pin
@@ -339,7 +411,13 @@ app.put('/api/admin/products/:id', adminAuth, async (req, res) => {
     return res.status(404).json({ error: 'Product not found' })
   }
 
-  Object.assign(product, req.body)
+  // WR-03: Whitelist allowed fields to prevent mass assignment
+  const allowedFields = ['name', 'price', 'description', 'image', 'category', 'available', 'stock', 'rating', 'deliveryServices', 'availableDeliveryServices']
+  const updates = {}
+  for (const key of allowedFields) {
+    if (req.body[key] !== undefined) updates[key] = req.body[key]
+  }
+  Object.assign(product, updates)
   await db.write()
 
   res.json(product)
@@ -389,7 +467,13 @@ app.put('/api/admin/delivery-services/:id', adminAuth, async (req, res) => {
     return res.status(404).json({ error: 'Delivery service not found' })
   }
 
-  Object.assign(service, req.body)
+  // WR-03: Whitelist allowed fields to prevent mass assignment
+  const allowedFields = ['name', 'description', 'coverageAreas', 'pricing', 'estimatedTime', 'rating', 'image', 'available']
+  const updates = {}
+  for (const key of allowedFields) {
+    if (req.body[key] !== undefined) updates[key] = req.body[key]
+  }
+  Object.assign(service, updates)
   await db.write()
 
   res.json(service)
@@ -448,5 +532,6 @@ app.use((err, req, res, next) => {
 })
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`)
+  console.log(`Server running on port ${PORT}`)
+  console.log(`Data directory: ${DATA_DIR}`)
 })

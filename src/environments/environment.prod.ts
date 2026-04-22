@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://10.0.2.2:3000'
+  apiUrl: 'https://tagudin-products.onrender.com'
 };
