@@ -60,9 +60,22 @@ app.use(express.json())
 app.use('/uploads', express.static(uploadsDir))
 
 // Initialize LowDB
+// First run on persistent disk: copy seed data from __dirname if db is empty
 const defaultData = { products: [], cart: [], orders: [], deliveryServices: [], adminPin: null }
 const dbPath = path.join(DATA_DIR, 'db.json')
+const deployDbPath = path.join(__dirname, 'db.json')
 const db = await JSONFilePreset(dbPath, defaultData)
+
+// Seed from deploy bundle if persistent db has only defaults
+const isEmpty = !db.data.products.length && !db.data.adminPin
+if (isEmpty && fs.existsSync(deployDbPath)) {
+  const seedData = JSON.parse(fs.readFileSync(deployDbPath, 'utf-8'))
+  db.data.products = seedData.products || []
+  db.data.deliveryServices = seedData.deliveryServices || []
+  db.data.adminPin = seedData.adminPin || null
+  await db.write()
+  console.log('Database seeded from deploy bundle')
+}
 
 // ==================== ADMIN AUTH MIDDLEWARE ====================
 // CR-03: Accept session token OR raw PIN (backwards-compatible during migration)
