@@ -1,0 +1,151 @@
+// Pastel Light Theme — Ionic CSS Variable Mapping
+// Maps pastel tokens to Ionic's theming system
+
+@use 'colors' as *;
+@use 'typography' as *;
+@use 'spacing' as *;
+
+:root {
+
+  // ── Ionic Primary (terracotta) ──
+  --ion-color-primary:          #{$stitch-primary};
+  --ion-color-primary-rgb:      #{$stitch-primary-rgb};
+  --ion-color-primary-contrast: #{$stitch-text-inverse};
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade:    #{$stitch-primary-dark};
+  --ion-color-primary-tint:     #{$stitch-primary-light};
+
+  // ── Ionic Secondary ──
+  --ion-color-secondary:        #{$stitch-surface-3};
+  --ion-color-secondary-rgb:    247, 243, 233;
+  --ion-color-secondary-contrast: #{$stitch-text-primary};
+  --ion-color-secondary-contrast-rgb: 58, 58, 58;
+  --ion-color-secondary-shade:  #{$stitch-surface-2};
+  --ion-color-secondary-tint:   #{$stitch-surface-4};
+
+  // ── Ionic Tertiary ──
+  --ion-color-tertiary:         #{$stitch-primary-light};
+  --ion-color-tertiary-rgb:     212, 150, 122;
+  --ion-color-tertiary-contrast: #{$stitch-text-primary};
+  --ion-color-tertiary-contrast-rgb: 58, 58, 58;
+  --ion-color-tertiary-shade:   #{$stitch-primary};
+  --ion-color-tertiary-tint:    #{$stitch-primary-light};
+
+  // ── Ionic Success ──
+  --ion-color-success:          #{$stitch-success};
+  --ion-color-success-rgb:      #{$stitch-success-rgb};
+  --ion-color-success-contrast: #{$stitch-text-inverse};
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+
+  // ── Ionic Warning ──
+  --ion-color-warning:          #{$stitch-warning};
+  --ion-color-warning-rgb:      #{$stitch-warning-rgb};
+  --ion-color-warning-contrast: #{$stitch-text-primary};
+  --ion-color-warning-contrast-rgb: 58, 58, 58;
+
+  // ── Ionic Danger ──
+  --ion-color-danger:           #{$stitch-error};
+  --ion-color-danger-rgb:       #{$stitch-error-rgb};
+  --ion-color-danger-contrast:  #{$stitch-text-inverse};
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+
+  // ── Ionic Medium ──
+  --ion-color-medium:           #{$stitch-text-tertiary};
+  --ion-color-medium-rgb:       158, 158, 158;
+  --ion-color-medium-contrast:  #{$stitch-text-primary};
+  --ion-color-medium-contrast-rgb: 58, 58, 58;
+
+  // ── Background ──
+  --ion-background-color:        #{$stitch-surface-1};
+  --ion-background-color-rgb:    254, 253, 251;
+
+  // ── Text ──
+  --ion-text-color:             #{$stitch-text-primary};
+  --ion-text-color-rgb:         58, 58, 58;
+
+  // ── Toolbar ──
+  --ion-toolbar-background:     #{$stitch-surface-0};
+  --ion-toolbar-color:           #{$stitch-text-primary};
+
+  // ── Card ──
+  --ion-card-background:        #{$stitch-surface-2};
+  --ion-card-color:             #{$stitch-text-primary};
+
+  // ── Item ──
+  --ion-item-background:        #{$stitch-surface-2};
+  --ion-item-background-hover:   #{$stitch-surface-3};
+
+  // ── Pastel Custom Properties ──
+  // Surface
+  --stitch-surface-0:       #{$stitch-surface-0};
+  --stitch-surface-1:       #{$stitch-surface-1};
+  --stitch-surface-2:       #{$stitch-surface-2};
+  --stitch-surface-3:       #{$stitch-surface-3};
+  --stitch-surface-4:       #{$stitch-surface-4};
+
+  // Text
+  --stitch-text-primary:    #{$stitch-text-primary};
+  --stitch-text-secondary:  #{$stitch-text-secondary};
+  --stitch-text-tertiary:   #{$stitch-text-tertiary};
+  --stitch-text-disabled:   #{$stitch-text-disabled};
+  --stitch-text-inverse:    #{$stitch-text-inverse};
+  --stitch-price:           #{$stitch-price};
+
+  // Border
+  --stitch-border:          #{$stitch-border};
+  --stitch-border-light:    #{$stitch-border-light};
+  --stitch-border-focus:    #{$stitch-border-focus};
+
+  // Radius
+  --stitch-radius-sm:       #{$stitch-radius-sm};
+  --stitch-radius-md:       #{$stitch-radius-md};
+  --stitch-radius-lg:       #{$stitch-radius-lg};
+  --stitch-radius-xl:       #{$stitch-radius-xl};
+  --stitch-radius-full:     #{$stitch-radius-full};
+
+  // Spacing
+  --stitch-space-1:         #{$stitch-space-1};
+  --stitch-space-2:         #{$stitch-space-2};
+  --stitch-space-3:         #{$stitch-space-3};
+  --stitch-space-4:         #{$stitch-space-4};
+  --stitch-space-6:         #{$stitch-space-6};
+  --stitch-space-8:         #{$stitch-space-8};
+
+  // Shadow
+  --stitch-shadow-sm:       #{$stitch-shadow-sm};
+  --stitch-shadow-md:       #{$stitch-shadow-md};
+  --stitch-shadow-lg:       #{$stitch-shadow-lg};
+  --stitch-shadow-glow:     #{$stitch-shadow-glow};
+
+  // Transition
+  --stitch-transition-fast:  #{$stitch-transition-fast};
+  --stitch-transition-base:  #{$stitch-transition-base};
+
+  // ── Legacy compatibility aliases ──
+  --text-primary:           var(--stitch-text-primary);
+  --text-secondary:         var(--stitch-text-secondary);
+  --text-accent:            var(--stitch-price);
+  --text-disabled:          var(--stitch-text-disabled);
+  --text-light:             var(--stitch-text-inverse);
+  --bg-primary:             var(--stitch-surface-1);
+  --bg-secondary:           var(--stitch-surface-3);
+  --bg-page:                var(--stitch-surface-0);
+  --border-color:           var(--stitch-border);
+  --border-dark:            var(--stitch-border-light);
+  --color-success:          #{$stitch-success};
+  --color-error:            #{$stitch-error};
+  --color-info:             #{$stitch-info};
+  --color-warning:          #{$stitch-warning};
+  --radius-sm:              var(--stitch-radius-sm);
+  --radius-md:              var(--stitch-radius-md);
+  --radius-lg:              var(--stitch-radius-lg);
+  --radius-xl:              var(--stitch-radius-xl);
+  --spacing-xs:             var(--stitch-space-1);
+  --spacing-sm:             var(--stitch-space-2);
+  --spacing-md:             var(--stitch-space-4);
+  --spacing-lg:             var(--stitch-space-6);
+  --spacing-xl:             var(--stitch-space-8);
+  --shadow-sm:              var(--stitch-shadow-sm);
+  --shadow-md:              var(--stitch-shadow-md);
+  --shadow-lg:              var(--stitch-shadow-lg);
+}

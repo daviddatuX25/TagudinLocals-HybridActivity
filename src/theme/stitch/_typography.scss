@@ -1,0 +1,32 @@
+// Stitch Design System — Typography Tokens
+// Font: Manrope (from Stitch theme)
+
+// ── Font Family ──
+$stitch-font-family:     'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$stitch-font-mono:       'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+// ── Font Sizes ──
+$stitch-text-xs:         0.75rem;   // 12px
+$stitch-text-sm:         0.875rem;  // 14px
+$stitch-text-base:       1rem;      // 16px
+$stitch-text-lg:         1.125rem;  // 18px
+$stitch-text-xl:         1.25rem;   // 20px
+$stitch-text-2xl:        1.5rem;    // 24px
+$stitch-text-3xl:        2rem;      // 32px
+$stitch-text-4xl:        2.5rem;    // 40px
+
+// ── Font Weights ──
+$stitch-weight-normal:   400;
+$stitch-weight-medium:   500;
+$stitch-weight-semibold: 600;
+$stitch-weight-bold:     700;
+
+// ── Line Heights ──
+$stitch-leading-tight:   1.25;
+$stitch-leading-normal:  1.5;
+$stitch-leading-relaxed: 1.75;
+
+// ── Letter Spacing ──
+$stitch-tracking-tight: -0.02em;
+$stitch-tracking-normal: 0;
+$stitch-tracking-wide:   0.02em;

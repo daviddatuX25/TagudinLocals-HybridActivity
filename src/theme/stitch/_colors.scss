@@ -1,0 +1,51 @@
+// Pastel Color Tokens (Light Theme)
+// Warm cream/beige aesthetic with proper contrast
+
+// ── Primary Palette ──
+$stitch-primary:         #C67B5C;
+$stitch-primary-light:   #D4967A;
+$stitch-primary-dark:    #A8654A;
+$stitch-primary-rgb:     198, 123, 92;
+
+// ── Surface Colors (Light) ──
+$stitch-surface-0:       #E8E3D5;   // Page bg
+$stitch-surface-1:       #FEFDFB;   // Primary bg
+$stitch-surface-2:       #FFFFFF;   // Card bg
+$stitch-surface-3:       #F7F3E9;   // Elevated surface
+$stitch-surface-4:       #F5ECD7;   // Hover / active state
+
+// ── Neutral / Text ──
+$stitch-text-primary:    #3A3A3A;
+$stitch-text-secondary:  #6B6B6B;
+$stitch-text-tertiary:   #9E9E9E;
+$stitch-text-disabled:   #BDBDBD;
+$stitch-text-inverse:    #FFFFFF;
+
+// ── Price Accent (warm orange) ──
+$stitch-price:           #E89B3C;
+$stitch-price-rgb:       232, 155, 60;
+
+// ── Semantic Colors ──
+$stitch-success:         #5E9E74;
+$stitch-success-rgb:     94, 158, 116;
+$stitch-error:           #C75050;
+$stitch-error-rgb:       199, 80, 80;
+$stitch-warning:         #D4960A;
+$stitch-warning-rgb:     212, 150, 10;
+$stitch-info:            #4A8BD4;
+$stitch-info-rgb:        74, 139, 212;
+
+// ── Border & Divider ──
+$stitch-border:          #D4C4A8;
+$stitch-border-light:    #E8DCC8;
+$stitch-border-focus:    $stitch-primary;
+
+// ── Overlay ──
+$stitch-overlay:         rgba(58, 58, 58, 0.5);
+$stitch-overlay-heavy:   rgba(58, 58, 58, 0.75);
+
+// ── Shadows (light context) ──
+$stitch-shadow-sm:       0 2px 8px rgba(141, 118, 88, 0.08);
+$stitch-shadow-md:       0 4px 16px rgba(110, 85, 71, 0.12);
+$stitch-shadow-lg:       0 8px 32px rgba(41, 39, 39, 0.16);
+$stitch-shadow-glow:     0 0 20px rgba($stitch-primary, 0.2);

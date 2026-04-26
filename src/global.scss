@@ -5,7 +5,7 @@
  * Component mixins are available via @use '../../theme/stitch/components'.
  */
 
-@use 'theme/stitch/stitch';
+@use './theme/stitch/stitch';
 
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";

@@ -1,0 +1,208 @@
+// Component Mixins — Pastel Light Theme
+// Reusable patterns with proper light-mode contrast
+
+@use 'colors' as *;
+@use 'typography' as *;
+@use 'spacing' as *;
+
+// ── Card ──
+@mixin card {
+  background: $stitch-surface-2;
+  border-radius: $stitch-radius-md;
+  border: 1px solid $stitch-border;
+  box-shadow: $stitch-shadow-sm;
+  overflow: hidden;
+}
+
+@mixin card-elevated {
+  background: $stitch-surface-3;
+  border-radius: $stitch-radius-md;
+  border: 1px solid $stitch-border-light;
+  box-shadow: $stitch-shadow-md;
+  overflow: hidden;
+}
+
+// ── Chip / Tag ──
+@mixin chip {
+  display: inline-flex;
+  align-items: center;
+  padding: $stitch-space-1 $stitch-space-3;
+  border-radius: $stitch-radius-full;
+  font-size: $stitch-text-xs;
+  font-weight: $stitch-weight-medium;
+  background: $stitch-surface-3;
+  color: $stitch-text-secondary;
+  border: 1px solid $stitch-border;
+
+  &--active {
+    background: rgba($stitch-primary, 0.15);
+    color: $stitch-primary-dark;
+    border-color: rgba($stitch-primary, 0.4);
+  }
+}
+
+// ── Button ──
+@mixin button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $stitch-space-3 $stitch-space-6;
+  border-radius: $stitch-radius-md;
+  font-family: $stitch-font-family;
+  font-size: $stitch-text-sm;
+  font-weight: $stitch-weight-semibold;
+  background: $stitch-primary;
+  color: $stitch-text-inverse;
+  border: none;
+  cursor: pointer;
+  transition: background $stitch-transition-fast, box-shadow $stitch-transition-fast;
+
+  &:hover {
+    background: $stitch-primary-light;
+    box-shadow: $stitch-shadow-glow;
+  }
+
+  &:active {
+    background: $stitch-primary-dark;
+  }
+}
+
+@mixin button-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $stitch-space-3 $stitch-space-6;
+  border-radius: $stitch-radius-md;
+  font-family: $stitch-font-family;
+  font-size: $stitch-text-sm;
+  font-weight: $stitch-weight-medium;
+  background: transparent;
+  color: $stitch-text-secondary;
+  border: 1px solid $stitch-border;
+  cursor: pointer;
+  transition: all $stitch-transition-fast;
+
+  &:hover {
+    background: $stitch-surface-3;
+    color: $stitch-text-primary;
+  }
+}
+
+// ── Input Field ──
+@mixin input-field {
+  width: 100%;
+  padding: $stitch-space-3 $stitch-space-4;
+  border-radius: $stitch-radius-md;
+  background: $stitch-surface-1;
+  border: 1px solid $stitch-border;
+  color: $stitch-text-primary;
+  font-family: $stitch-font-family;
+  font-size: $stitch-text-sm;
+  transition: border-color $stitch-transition-fast;
+
+  &::placeholder {
+    color: $stitch-text-tertiary;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $stitch-primary;
+    box-shadow: 0 0 0 2px rgba($stitch-primary, 0.2);
+  }
+}
+
+// ── Price Text ──
+@mixin price {
+  color: $stitch-price;
+  font-weight: $stitch-weight-bold;
+  font-size: $stitch-text-lg;
+}
+
+// ── Section Header ──
+@mixin section-header {
+  font-size: $stitch-text-xl;
+  font-weight: $stitch-weight-bold;
+  color: $stitch-text-primary;
+  letter-spacing: $stitch-tracking-tight;
+}
+
+// ── Bottom Nav ──
+@mixin bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: $stitch-space-2 0;
+  background: $stitch-surface-1;
+  border-top: 1px solid $stitch-border;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: $stitch-z-sticky;
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: $stitch-text-xs;
+    color: $stitch-text-tertiary;
+    transition: color $stitch-transition-fast;
+
+    &--active {
+      color: $stitch-primary;
+    }
+  }
+}
+
+// ── Product Card Image ──
+@mixin product-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: $stitch-radius-sm;
+  background: $stitch-surface-3;
+}
+
+// ── Search Bar ──
+@mixin search-bar {
+  display: flex;
+  align-items: center;
+  gap: $stitch-space-2;
+  padding: $stitch-space-2 $stitch-space-4;
+  border-radius: $stitch-radius-full;
+  background: $stitch-surface-2;
+  border: 1px solid $stitch-border;
+  color: $stitch-text-tertiary;
+  font-size: $stitch-text-sm;
+
+  input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: $stitch-text-primary;
+    font-family: $stitch-font-family;
+    outline: none;
+
+    &::placeholder {
+      color: $stitch-text-tertiary;
+    }
+  }
+}
+
+// ── Empty State ──
+@mixin empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $stitch-space-16 $stitch-space-8;
+  text-align: center;
+  color: $stitch-text-tertiary;
+  gap: $stitch-space-4;
+
+  ion-icon {
+    font-size: 48px;
+    color: $stitch-text-disabled;
+  }
+}

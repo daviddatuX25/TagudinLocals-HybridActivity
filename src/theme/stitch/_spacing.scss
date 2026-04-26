@@ -1,0 +1,40 @@
+// Stitch Design System — Spacing & Layout Tokens
+
+// ── Spacing Scale (4px base) ──
+$stitch-space-0:         0;
+$stitch-space-1:         4px;
+$stitch-space-2:         8px;
+$stitch-space-3:         12px;
+$stitch-space-4:         16px;
+$stitch-space-5:         20px;
+$stitch-space-6:         24px;
+$stitch-space-8:         32px;
+$stitch-space-10:        40px;
+$stitch-space-12:        48px;
+$stitch-space-16:        64px;
+
+// ── Border Radius (ROUND_TWELVE from Stitch) ──
+$stitch-radius-sm:       8px;
+$stitch-radius-md:       12px;
+$stitch-radius-lg:       16px;
+$stitch-radius-xl:       24px;
+$stitch-radius-full:     9999px;
+
+// ── Breakpoints ──
+$stitch-bp-sm:           576px;
+$stitch-bp-md:           768px;
+$stitch-bp-lg:           992px;
+$stitch-bp-xl:           1200px;
+
+// ── Z-Index Scale ──
+$stitch-z-base:          0;
+$stitch-z-dropdown:      100;
+$stitch-z-sticky:        200;
+$stitch-z-overlay:       300;
+$stitch-z-modal:         400;
+$stitch-z-toast:         500;
+
+// ── Transitions ──
+$stitch-transition-fast:  150ms ease;
+$stitch-transition-base:  250ms ease;
+$stitch-transition-slow:  350ms ease;
