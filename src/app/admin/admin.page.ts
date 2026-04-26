@@ -14,7 +14,7 @@ import {
   addOutline, createOutline, trashOutline, saveOutline, closeOutline,
   cartOutline, cubeOutline, bicycleOutline, checkmarkCircle, timeOutline,
   checkmarkOutline, closeCircleOutline, logOutOutline,
-  cameraOutline, imageOutline, lockClosedOutline
+  cameraOutline, imageOutline, lockClosedOutline, linkOutline
 } from 'ionicons/icons';
 import { Camera } from '@capacitor/camera';
 import { AuthService } from '../services/auth.service';
@@ -76,6 +76,7 @@ export class AdminPage implements OnInit {
   isUploading = false;
   showErrorToast = false;
   errorMessage: string | null = null;
+  showUrlInput = false;
   
   alertButtons = [
     {
@@ -104,7 +105,7 @@ export class AdminPage implements OnInit {
       addOutline, createOutline, trashOutline, saveOutline, closeOutline,
       cartOutline, cubeOutline, bicycleOutline, checkmarkCircle, timeOutline,
       checkmarkOutline, closeCircleOutline, logOutOutline,
-      cameraOutline, imageOutline, lockClosedOutline
+      cameraOutline, imageOutline, lockClosedOutline, linkOutline
     });
   }
 
@@ -327,6 +328,19 @@ export class AdminPage implements OnInit {
 
   // ==================== CAMERA & UPLOAD ====================
 
+  removeImage(): void {
+    this.imagePreview = null;
+    this.newProduct.image = '';
+  }
+
+  onImageUrlChange(): void {
+    if (this.newProduct.image) {
+      this.imagePreview = this.newProduct.image;
+    } else {
+      this.imagePreview = null;
+    }
+  }
+
   async takePhoto(): Promise<void> {
     try {
       const result = await Camera.takePhoto({
@@ -370,7 +384,10 @@ export class AdminPage implements OnInit {
         formData
       ).subscribe({
         next: (response) => {
-          this.newProduct.image = `${environment.apiUrl}${response.url}`;
+          // Cloudinary returns absolute URLs, local uploads return relative paths
+          this.newProduct.image = response.url.startsWith('http')
+            ? response.url
+            : `${environment.apiUrl}${response.url}`;
           this.imagePreview = this.newProduct.image!;
           this.isUploading = false;
         },
