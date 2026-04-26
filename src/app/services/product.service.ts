@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, catchError, of } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap, catchError, of, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Product } from '../models/product.model';
 import { AuthService } from './auth.service';
@@ -78,39 +78,45 @@ export class ProductService {
     return this.products;
   }
 
-  addProduct(product: Omit<Product, 'id'>): void {
+  addProduct(product: Omit<Product, 'id'>): Observable<Product | null> {
     const headers = this.authService.getPinHeader();
-    this.http.post<Product>(`${environment.apiUrl}/api/admin/products`, product, { headers }).pipe(
+    return this.http.post<Product>(`${environment.apiUrl}/api/admin/products`, product, { headers }).pipe(
       tap(() => {
         this.fetchProducts();
       }),
-      catchError(() => {
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 401) return throwError(() => err);
+        this.errorSubject.next('Failed to add product');
         return of(null);
       })
-    ).subscribe();
+    );
   }
 
-  updateProduct(id: string, updates: Partial<Product>): void {
+  updateProduct(id: string, updates: Partial<Product>): Observable<Product | null> {
     const headers = this.authService.getPinHeader();
-    this.http.put<Product>(`${environment.apiUrl}/api/admin/products/${id}`, updates, { headers }).pipe(
+    return this.http.put<Product>(`${environment.apiUrl}/api/admin/products/${id}`, updates, { headers }).pipe(
       tap(() => {
         this.fetchProducts();
       }),
-      catchError(() => {
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 401) return throwError(() => err);
+        this.errorSubject.next('Failed to update product');
         return of(null);
       })
-    ).subscribe();
+    );
   }
 
-  deleteProduct(id: string): void {
+  deleteProduct(id: string): Observable<any> {
     const headers = this.authService.getPinHeader();
-    this.http.delete(`${environment.apiUrl}/api/admin/products/${id}`, { headers }).pipe(
+    return this.http.delete(`${environment.apiUrl}/api/admin/products/${id}`, { headers }).pipe(
       tap(() => {
         this.fetchProducts();
       }),
-      catchError(() => {
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 401) return throwError(() => err);
+        this.errorSubject.next('Failed to delete product');
         return of(null);
       })
-    ).subscribe();
+    );
   }
 }

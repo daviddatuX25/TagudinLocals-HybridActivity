@@ -159,6 +159,13 @@ export class AdminPage implements OnInit {
     this.showPinModal = true;
   }
 
+  private handleSessionExpired() {
+    this.authService.logout();
+    this.pinMode = 'verify';
+    this.pinError = 'Session expired. Please enter your PIN again.';
+    this.showPinModal = true;
+  }
+
   loadData() {
     this.products = this.productService.getProducts();
     this.deliveryService.getAllServices().subscribe(services => {
@@ -193,13 +200,25 @@ export class AdminPage implements OnInit {
   }
 
   saveProduct() {
-    if (this.isEditMode && this.newProduct.id) {
-      this.productService.updateProduct(this.newProduct.id, this.newProduct as Product);
-    } else {
-      this.productService.addProduct(this.newProduct as Omit<Product, 'id'>);
-    }
-    this.loadData();
-    this.closeProductModal();
+    const obs = this.isEditMode && this.newProduct.id
+      ? this.productService.updateProduct(this.newProduct.id, this.newProduct as Product)
+      : this.productService.addProduct(this.newProduct as Omit<Product, 'id'>);
+
+    obs.subscribe({
+      next: () => {
+        this.loadData();
+        this.closeProductModal();
+      },
+      error: (err) => {
+        if (err?.status === 401) {
+          this.handleSessionExpired();
+          this.closeProductModal();
+        } else {
+          this.errorMessage = 'Failed to save product';
+          this.showErrorToast = true;
+        }
+      }
+    });
   }
 
   confirmDeleteProduct(product: Product) {
@@ -209,8 +228,19 @@ export class AdminPage implements OnInit {
 
   deleteProduct() {
     if (this.itemToDelete && this.itemToDelete.type === 'product') {
-      this.productService.deleteProduct(this.itemToDelete.item.id);
-      this.loadData();
+      this.productService.deleteProduct(this.itemToDelete.item.id).subscribe({
+        next: () => {
+          this.loadData();
+        },
+        error: (err) => {
+          if (err?.status === 401) {
+            this.handleSessionExpired();
+          } else {
+            this.errorMessage = 'Failed to delete product';
+            this.showErrorToast = true;
+          }
+        }
+      });
     }
     this.showDeleteAlert = false;
     this.itemToDelete = null;
@@ -253,11 +283,22 @@ export class AdminPage implements OnInit {
   saveDeliveryServices() {
     if (this.selectedProductForDelivery && this.selectedProductForDelivery.id) {
       this.productService.updateProduct(
-        this.selectedProductForDelivery.id, 
+        this.selectedProductForDelivery.id,
         this.selectedProductForDelivery
-      );
-      this.loadData();
-      this.closeDeliveryModal();
+      ).subscribe({
+        next: () => {
+          this.loadData();
+          this.closeDeliveryModal();
+        },
+        error: (err) => {
+          if (err?.status === 401) {
+            this.handleSessionExpired();
+          } else {
+            this.errorMessage = 'Failed to save delivery services';
+            this.showErrorToast = true;
+          }
+        }
+      });
     }
   }
 
@@ -274,11 +315,22 @@ export class AdminPage implements OnInit {
   }
 
   updateOrderStatus(orderId: string, status: Order['status']) {
-    this.orderService.updateOrderStatus(orderId, status);
-    this.loadData();
-    if (this.selectedOrder && this.selectedOrder.id === orderId) {
-      this.selectedOrder.status = status;
-    }
+    this.orderService.updateOrderStatus(orderId, status).subscribe({
+      next: () => {
+        this.loadData();
+        if (this.selectedOrder && this.selectedOrder.id === orderId) {
+          this.selectedOrder.status = status;
+        }
+      },
+      error: (err) => {
+        if (err?.status === 401) {
+          this.handleSessionExpired();
+        } else {
+          this.errorMessage = 'Failed to update order status';
+          this.showErrorToast = true;
+        }
+      }
+    });
   }
 
   closeOrderModal() {
@@ -379,9 +431,11 @@ export class AdminPage implements OnInit {
       const formData = new FormData();
       formData.append('image', blob, 'product.jpg');
 
+      const headers = this.authService.getAuthHeaders();
       this.http.post<{ url: string }>(
         `${environment.apiUrl}/upload`,
-        formData
+        formData,
+        { headers }
       ).subscribe({
         next: (response) => {
           // Cloudinary returns absolute URLs, local uploads return relative paths
@@ -391,9 +445,13 @@ export class AdminPage implements OnInit {
           this.imagePreview = this.newProduct.image!;
           this.isUploading = false;
         },
-        error: () => {
-          this.errorMessage = 'Failed to upload image';
-          this.showErrorToast = true;
+        error: (err) => {
+          if (err.status === 401) {
+            this.handleSessionExpired();
+          } else {
+            this.errorMessage = 'Failed to upload image';
+            this.showErrorToast = true;
+          }
           this.isUploading = false;
         }
       });

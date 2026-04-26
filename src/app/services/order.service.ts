@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Order, OrderStatus } from '../models/order.model';
@@ -84,18 +84,19 @@ export class OrderService {
     return this.orders;
   }
 
-  updateOrderStatus(orderId: string, status: Order['status']): void {
+  updateOrderStatus(orderId: string, status: Order['status']): Observable<Order | null> {
     const headers = this.authService.getPinHeader();
-    this.http.patch<Order>(`${environment.apiUrl}/api/admin/orders/${orderId}`, { status }, { headers }).pipe(
+    return this.http.patch<Order>(`${environment.apiUrl}/api/admin/orders/${orderId}`, { status }, { headers }).pipe(
       tap(updatedOrder => {
         this.orders = this.orders.map(o =>
           o.id === orderId ? { ...o, status } : o
         );
         this.ordersSubject.next([...this.orders]);
       }),
-      catchError(() => {
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 401) return throwError(() => err);
         return of(null);
       })
-    ).subscribe();
+    );
   }
 }
