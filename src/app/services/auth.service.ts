@@ -10,9 +10,17 @@ export class AuthService {
   private verified = new BehaviorSubject<boolean>(false);
   public isAdminVerified$ = this.verified.asObservable();
 
-  private pin: string | null = null;
+  // CR-03: Use session token instead of raw PIN
+  private sessionToken: string | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // Restore session from sessionStorage
+    const saved = sessionStorage.getItem('adminSessionToken');
+    if (saved) {
+      this.sessionToken = saved;
+      this.verified.next(true);
+    }
+  }
 
   isAdminVerified(): boolean {
     return this.verified.getValue();
@@ -35,10 +43,11 @@ export class AuthService {
 
   verifyPin(pin: string): Observable<boolean> {
     return new Observable<boolean>(observer => {
-      this.http.post<{ success: boolean }>(`${environment.apiUrl}/api/admin/verify-pin`, { pin }).subscribe({
+      this.http.post<{ success: boolean; token?: string }>(`${environment.apiUrl}/api/admin/verify-pin`, { pin }).subscribe({
         next: (res) => {
-          if (res.success) {
-            this.pin = pin;
+          if (res.success && res.token) {
+            this.sessionToken = res.token;
+            sessionStorage.setItem('adminSessionToken', res.token);
             this.verified.next(true);
           }
           observer.next(res.success);
@@ -54,10 +63,11 @@ export class AuthService {
 
   setupPin(pin: string): Observable<boolean> {
     return new Observable<boolean>(observer => {
-      this.http.post<{ success: boolean }>(`${environment.apiUrl}/api/admin/setup-pin`, { pin }).subscribe({
+      this.http.post<{ success: boolean; token?: string }>(`${environment.apiUrl}/api/admin/setup-pin`, { pin }).subscribe({
         next: (res) => {
-          if (res.success) {
-            this.pin = pin;
+          if (res.success && res.token) {
+            this.sessionToken = res.token;
+            sessionStorage.setItem('adminSessionToken', res.token);
             this.verified.next(true);
           }
           observer.next(res.success);
@@ -72,14 +82,21 @@ export class AuthService {
   }
 
   logout(): void {
-    this.pin = null;
+    this.sessionToken = null;
+    sessionStorage.removeItem('adminSessionToken');
     this.verified.next(false);
   }
 
-  getPinHeader(): { [header: string]: string } {
-    if (this.pin) {
-      return { 'x-admin-pin': this.pin };
+  // Returns session token header (preferred), falls back to empty
+  getAuthHeaders(): { [header: string]: string } {
+    if (this.sessionToken) {
+      return { 'x-admin-token': this.sessionToken };
     }
     return {};
+  }
+
+  // Backwards-compatible alias
+  getPinHeader(): { [header: string]: string } {
+    return this.getAuthHeaders();
   }
 }
