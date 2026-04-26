@@ -1,8 +1,8 @@
 # Roadmap: TagudinLocals-HybridActivity
 
 **Created:** 2026-04-20
-**Granularity:** Coarse (3 phases)
-**Total Requirements:** 18
+**Granularity:** Coarse (6 phases)
+**Total Requirements:** 18 (original) + 18 (redesign)
 
 ## Phase 1: Backend API
 
@@ -64,12 +64,85 @@ Plans:
 
 ---
 
+## Phase 4: Critical Flow Fixes (P0)
+
+**Goal:** Fix the three root problems identified in REDESIGN.md: wrong entry flow (role selection), wrong checkout flow (3-page detour), wrong data flow (localStorage as primary). Make the app behave like a real e-commerce app.
+
+**Source:** .planning/codebase/REDESIGN.md sections 1-5
+
+**Depends on:** Phases 1-3 (complete)
+
+**Plans:** 1 plan (ready for execution)
+
+Plans:
+- [ ] 04-01-PLAN.md -- Server endpoints, remove landing, API-first services, PIN modal, merge checkout, stock display
+
+**Success Criteria:**
+1. App opens directly to /products (no landing/role-selection page)
+2. Checkout is a single page with delivery method, details, and address sections (no /delivery page)
+3. /admin route requires PIN authentication (AdminGuard + server middleware)
+4. Products, cart, and orders read/write via API only (localStorage as cache)
+5. POST /orders atomically deducts stock
+
+---
+
+## Phase 5: UX Improvements (P1)
+
+**Goal:** Fix UX-breaking issues: no feedback on actions, no form validation, no loading states, no double-submit prevention, inconsistent headers.
+
+**Source:** .planning/codebase/REDESIGN.md sections 6-7
+
+**Depends on:** Phase 4
+
+**Plans:** 0 plans
+
+Plans:
+- [ ] 05-01-PLAN.md -- (not yet created)
+
+**Success Criteria:**
+1. Add-to-cart shows toast + cart badge animation
+2. Checkout form validates with inline errors on blur
+3. Cart and checkout show loading states during API calls
+4. Place Order button prevents double-submit with spinner + disabled state
+5. CartGuard redirects to /products if cart is empty
+6. Consistent header style across all buyer pages
+
+---
+
+## Phase 6: Polish & Accessibility (P2)
+
+**Goal:** Bottom tab navigation, product detail page, order history, pull-to-refresh, search debounce, lazy loading, ARIA labels, keyboard navigation, shared components.
+
+**Source:** .planning/codebase/REDESIGN.md sections 2, 3, 6-8
+
+**Depends on:** Phase 5
+
+**Plans:** 0 plans
+
+Plans:
+- [ ] 06-01-PLAN.md -- (not yet created)
+
+**Success Criteria:**
+1. Bottom tab bar with Home, Cart, Orders tabs
+2. /products/:id detail page with full product info
+3. /orders page showing customer order history
+4. Pull-to-refresh on Products and Cart pages
+5. Search with 300ms debounce
+6. Images use lazy loading + error fallback placeholder
+7. ARIA labels on all icon buttons, aria-live on cart badge
+8. Shared components: empty-state, product-card, loading-skeleton, order-card
+
+---
+
 ## Phase Summary
 
-| Phase | Goal | Requirements | Success Criteria |
-|-------|------|--------------|------------------|
-| 1 | Backend API | BACK-01-06 | 5 |
-| 2 | Frontend Integration | PROD-01-05, CART-01-04, UI-01-03 | 6 |
-| 3 | Camera | CAM-01-04 | 4 |
+| Phase | Goal | Requirements | Success Criteria | Status |
+|-------|------|--------------|------------------|--------|
+| 1 | Backend API | BACK-01-06 | 5 | Complete |
+| 2 | Frontend Integration | PROD-01-05, CART-01-04, UI-01-03 | 6 | Complete |
+| 3 | Camera | CAM-01-04 | 4 | Complete |
+| 4 | Critical Flow Fixes (P0) | REDESIGN 1-5 | 5 | Not started |
+| 5 | UX Improvements (P1) | REDESIGN 6-7 | 6 | Not started |
+| 6 | Polish & Accessibility (P2) | REDESIGN 2,3,6-8 | 8 | Not started |
 
-**Coverage:** 18/18 requirements mapped
+**Coverage:** 18/18 original + 19 redesign requirements mapped

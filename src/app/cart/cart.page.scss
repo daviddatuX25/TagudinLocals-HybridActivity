@@ -1,44 +1,54 @@
+@use '../../theme/stitch/colors' as *;
+@use '../../theme/stitch/typography' as *;
+@use '../../theme/stitch/spacing' as *;
+@use '../../theme/stitch/components' as *;
+
 .cart-list {
-  margin-bottom: 1rem;
+  margin-bottom: $stitch-space-4;
 }
 
 .cart-item {
   --padding-start: 0;
   --inner-padding-end: 0;
-  margin-bottom: 1rem;
-  
+  --background: #{$stitch-surface-2};
+  margin-bottom: $stitch-space-4;
+  border-radius: $stitch-radius-md;
+
   ion-thumbnail {
     width: 80px;
     height: 80px;
-    margin-right: 1rem;
-    
+    margin-right: $stitch-space-4;
+
     img {
       object-fit: cover;
-      border-radius: 8px;
+      border-radius: $stitch-radius-sm;
     }
   }
-  
+
   h2 {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
+    font-family: $stitch-font-family;
+    font-weight: $stitch-weight-semibold;
+    margin-bottom: $stitch-space-1;
+    color: $stitch-text-primary;
   }
-  
+
   p {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
+    color: $stitch-text-secondary;
+    font-size: $stitch-text-sm;
   }
 }
 
 .quantity-controls {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  
+  gap: $stitch-space-2;
+  margin-top: $stitch-space-2;
+
   .quantity {
     min-width: 30px;
     text-align: center;
-    font-weight: 600;
+    font-weight: $stitch-weight-semibold;
+    color: $stitch-text-primary;
   }
 }
 
@@ -46,33 +56,34 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.5rem;
+  gap: $stitch-space-2;
 }
 
 .item-total {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--text-accent);
+  font-size: $stitch-text-lg;
+  font-weight: $stitch-weight-bold;
+  color: $stitch-price;
 }
 
 .summary-card {
-  margin: 1.5rem 0;
-  
+  margin: $stitch-space-6 0;
+  @include card;
+
   .summary-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 0.75rem;
-    
+    margin-bottom: $stitch-space-3;
+
     &.note {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
+      font-size: $stitch-text-sm;
+      color: $stitch-text-tertiary;
       margin-bottom: 0;
     }
-    
+
     .amount {
-      font-weight: 700;
-      font-size: 1.3rem;
-      color: var(--text-accent);
+      font-weight: $stitch-weight-bold;
+      font-size: $stitch-text-xl;
+      color: $stitch-price;
     }
   }
 }
@@ -80,33 +91,28 @@
 .action-buttons {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 1rem;
-  color: var(--text-primary);
+  gap: $stitch-space-3;
+  margin-top: $stitch-space-4;
+  color: $stitch-text-primary;
 }
 
 .empty-cart {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 70vh;
-  text-align: center;
-  
+  @include empty-state;
+
   .empty-icon {
     font-size: 100px;
-    color: var(--beige-dark);
-    margin-bottom: 1rem;
+    color: $stitch-text-disabled;
+    margin-bottom: $stitch-space-4;
   }
-  
+
   h2 {
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
+    margin-bottom: $stitch-space-2;
+    color: $stitch-text-primary;
   }
-  
+
   p {
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
+    color: $stitch-text-secondary;
+    margin-bottom: $stitch-space-8;
   }
 }
 

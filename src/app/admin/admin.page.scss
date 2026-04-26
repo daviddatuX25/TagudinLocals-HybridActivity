@@ -1,7 +1,12 @@
-// ==================== PIN MODAL ====================
+@use '../../theme/stitch/colors' as *;
+@use '../../theme/stitch/typography' as *;
+@use '../../theme/stitch/spacing' as *;
+@use '../../theme/stitch/components' as *;
+
+// ── PIN MODAL ──
 
 .pin-modal-content {
-  --background: var(--ion-background-color);
+  --background: #{$stitch-surface-1};
 }
 
 .pin-container {
@@ -9,31 +14,31 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 32px 24px;
+  padding: $stitch-space-8 $stitch-space-6;
   min-height: 60vh;
   text-align: center;
 
   .pin-icon {
     font-size: 64px;
-    color: var(--ion-color-primary);
-    margin-bottom: 16px;
+    color: $stitch-primary;
+    margin-bottom: $stitch-space-4;
   }
 
   h2 {
-    margin: 0 0 8px 0;
-    color: var(--text-primary);
+    margin: 0 0 $stitch-space-2 0;
+    color: $stitch-text-primary;
   }
 
   .pin-subtitle {
-    color: var(--text-secondary);
-    margin: 0 0 24px 0;
-    font-size: 14px;
+    color: $stitch-text-secondary;
+    margin: 0 0 $stitch-space-6 0;
+    font-size: $stitch-text-sm;
   }
 
   ion-list {
     width: 100%;
     max-width: 320px;
-    margin-bottom: 16px;
+    margin-bottom: $stitch-space-4;
   }
 
   ion-button {
@@ -42,324 +47,405 @@
   }
 
   .pin-error {
-    color: var(--ion-color-danger);
-    margin-top: 12px;
-    font-size: 14px;
+    color: $stitch-error;
+    margin-top: $stitch-space-3;
+    font-size: $stitch-text-sm;
   }
 }
 
+// ── SECTIONS ──
+
 .section-content {
-  padding: 16px;
+  padding: $stitch-space-4;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-  
+  margin-bottom: $stitch-space-4;
+
   h2 {
     margin: 0;
-    color: var(--text-primary);
+    color: $stitch-text-primary;
   }
 }
 
 .action-buttons {
   display: flex;
-  gap: 8px;
-  color: var(--window-border);
+  gap: $stitch-space-2;
+  color: $stitch-text-secondary;
 
-  
   ion-button {
-    --background: var(--bg-secondary);
-    color: var(--window-border);
+    --background: #{$stitch-surface-3};
+    color: $stitch-text-secondary;
 
     &:hover {
-      --background: var(--bg-secondary-hover);
+      --background: #{$stitch-surface-4};
     }
   }
 }
 
-// ==================== PRODUCTS SECTION ====================
+// ── PRODUCTS SECTION ──
 
 .product-card {
-  margin-bottom: 16px;
-  
+  @include card;
+  margin-bottom: $stitch-space-4;
+
   .product-image {
     width: 100%;
     height: 80px;
     object-fit: cover;
-    border-radius: var(--radius-sm);
+    border-radius: $stitch-radius-sm;
   }
-  
+
   h3 {
-    margin: 0 0 8px 0;
-    color: var(--text-primary);
+    margin: 0 0 $stitch-space-2 0;
+    color: $stitch-text-primary;
   }
-  
+
   .product-description {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin: 0 0 8px 0;
+    font-size: $stitch-text-sm;
+    color: $stitch-text-secondary;
+    margin: 0 0 $stitch-space-2 0;
   }
-  
+
   .product-info {
     display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: $stitch-space-2;
+    margin-bottom: $stitch-space-2;
     flex-wrap: wrap;
   }
-  
+
   .price {
-    font-size: 20px;
-    font-weight: bold;
-    color: var(--text-accent);
-    margin: 8px 0;
+    font-size: $stitch-text-xl;
+    font-weight: $stitch-weight-bold;
+    color: $stitch-price;
+    margin: $stitch-space-2 0;
   }
-  
+
   .delivery-services-info {
-    font-size: 12px;
-    color: var(--text-secondary);
+    font-size: $stitch-text-xs;
+    color: $stitch-text-tertiary;
   }
-  
+
   .action-buttons {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: $stitch-space-2;
     justify-content: center;
-    color: var(--window-border);
+    color: $stitch-text-secondary;
   }
 }
 
-// ==================== DELIVERY SERVICES SECTION ====================
+// ── DELIVERY SERVICES SECTION ──
 
 .delivery-card {
-  margin-bottom: 16px;
-  
+  @include card;
+  margin-bottom: $stitch-space-4;
+
   .service-details {
     display: flex;
-    gap: 8px;
-    margin: 12px 0;
+    gap: $stitch-space-2;
+    margin: $stitch-space-3 0;
     flex-wrap: wrap;
   }
-  
+
   .coverage-areas {
-    margin-top: 12px;
-    
+    margin-top: $stitch-space-3;
+
     strong {
       display: block;
-      margin-bottom: 8px;
-      color: var(--text-primary);
+      margin-bottom: $stitch-space-2;
+      color: $stitch-text-primary;
     }
-    
+
     .areas-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px;
+      gap: $stitch-space-1;
     }
   }
 }
 
-// ==================== ORDERS SECTION ====================
+// ── ORDERS SECTION ──
 
 .stats-grid {
-  margin-bottom: 16px;
-  
+  margin-bottom: $stitch-space-4;
+
   .stat-card {
+    @include card;
     text-align: center;
-    
+
     ion-card-content {
       h3 {
-        font-size: 28px;
-        font-weight: bold;
-        margin: 0 0 4px 0;
-        color: var(--text-accent);
+        font-size: $stitch-text-3xl;
+        font-weight: $stitch-weight-bold;
+        margin: 0 0 $stitch-space-1 0;
+        color: $stitch-price;
       }
-      
+
       p {
         margin: 0;
-        font-size: 14px;
-        color: var(--text-secondary);
+        font-size: $stitch-text-sm;
+        color: $stitch-text-secondary;
       }
     }
   }
 }
 
 .order-card {
-  margin-bottom: 16px;
+  @include card;
+  margin-bottom: $stitch-space-4;
   cursor: pointer;
-  transition: transform 0.2s;
-  
+  transition: transform $stitch-transition-fast;
+
   &:hover {
     transform: translateY(-2px);
   }
-  
+
   .order-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
-    
+    margin-bottom: $stitch-space-2;
+
     h3 {
       margin: 0;
-      color: var(--text-primary);
+      color: $stitch-text-primary;
     }
   }
-  
+
   .customer-info, .order-date, .delivery-service {
-    font-size: 14px;
-    margin: 4px 0;
-    color: var(--text-secondary);
+    font-size: $stitch-text-sm;
+    margin: $stitch-space-1 0;
+    color: $stitch-text-secondary;
   }
-  
+
   .delivery-service {
     display: flex;
     align-items: center;
-    gap: 4px;
-    
+    gap: $stitch-space-1;
+
     ion-icon {
       font-size: 16px;
     }
   }
-  
+
   .order-total {
     text-align: right;
-    
+
     h2 {
       margin: 0;
-      color: var(--text-accent);
-      font-size: 24px;
+      color: $stitch-price;
+      font-size: $stitch-text-2xl;
     }
-    
+
     p {
-      margin: 4px 0 0 0;
-      font-size: 12px;
-      color: var(--text-secondary);
+      margin: $stitch-space-1 0 0 0;
+      font-size: $stitch-text-xs;
+      color: $stitch-text-secondary;
     }
   }
 }
 
 .empty-state {
-  text-align: center;
-  padding: 40px;
-  color: var(--text-secondary);
-  
+  @include empty-state;
+
   ion-icon {
     font-size: 64px;
-    margin-bottom: 16px;
+    margin-bottom: $stitch-space-4;
     opacity: 0.5;
-    color: var(--window-border);
-
+    color: $stitch-text-disabled;
   }
-  
+
   p {
-    font-size: 16px;
+    font-size: $stitch-text-base;
   }
 }
 
-// ==================== MODALS ====================
+// ── MODALS ──
 
 .modal-content {
-  padding: 16px;
+  padding: $stitch-space-4;
 }
 
 .modal-buttons {
-  padding: 16px 0;
-  color: var(--window-border);
-
+  padding: $stitch-space-4 0;
+  color: $stitch-text-secondary;
 }
 
 .product-preview {
-  margin-bottom: 16px;
-  padding: 16px;
-  background: var(--bg-secondary);
-  border-radius: var(--radius-md);
-  
+  margin-bottom: $stitch-space-4;
+  padding: $stitch-space-4;
+  background: $stitch-surface-3;
+  border-radius: $stitch-radius-md;
+
   h3 {
-    margin: 0 0 8px 0;
-    color: var(--text-primary);
+    margin: 0 0 $stitch-space-2 0;
+    color: $stitch-text-primary;
   }
-  
+
   p {
     margin: 0;
-    color: var(--text-secondary);
-    font-size: 14px;
+    color: $stitch-text-secondary;
+    font-size: $stitch-text-sm;
   }
 }
 
 .status-selector {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: $stitch-space-2;
 }
 
 .order-item {
   display: flex;
   justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border-color);
-  
+  padding: $stitch-space-3 0;
+  border-bottom: 1px solid $stitch-border;
+
   &:last-child {
     border-bottom: none;
   }
-  
+
   .item-info {
     h4 {
-      margin: 0 0 4px 0;
-      color: var(--text-primary);
+      margin: 0 0 $stitch-space-1 0;
+      color: $stitch-text-primary;
     }
-    
+
     p {
       margin: 0;
-      font-size: 14px;
-      color: var(--text-secondary);
+      font-size: $stitch-text-sm;
+      color: $stitch-text-secondary;
     }
   }
-  
+
   .item-total {
-    font-size: 16px;
-    color: var(--text-accent);
+    font-size: $stitch-text-base;
+    color: $stitch-price;
   }
 }
 
 .order-summary {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 2px solid var(--border-color);
-  
+  margin-top: $stitch-space-4;
+  padding-top: $stitch-space-4;
+  border-top: 2px solid $stitch-border;
+
   .summary-row {
     display: flex;
     justify-content: space-between;
-    margin: 8px 0;
-    font-size: 14px;
+    margin: $stitch-space-2 0;
+    font-size: $stitch-text-sm;
 
     &.total {
-      font-size: 18px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border-color);
-      color: var(--text-accent);
+      font-size: $stitch-text-lg;
+      margin-top: $stitch-space-3;
+      padding-top: $stitch-space-3;
+      border-top: 1px solid $stitch-border;
+      color: $stitch-price;
     }
   }
 }
 
-// ==================== CAMERA & IMAGE PREVIEW ====================
+// ── IMAGE UPLOAD ──
+
+.image-upload-section {
+  margin: $stitch-space-3 $stitch-space-4;
+}
+
+.image-label {
+  display: block;
+  font-size: $stitch-text-sm;
+  font-weight: $stitch-weight-semibold;
+  color: $stitch-text-primary;
+  margin-bottom: $stitch-space-2;
+}
 
 .image-preview-container {
   text-align: center;
-  margin: 8px 16px 16px;
   position: relative;
+  border: 2px solid $stitch-border;
+  border-radius: $stitch-radius-md;
+  padding: $stitch-space-3;
+  margin-bottom: $stitch-space-2;
 
   .image-preview-img {
     max-width: 100%;
     max-height: 200px;
     object-fit: contain;
-    border-radius: var(--radius-sm, 8px);
+    border-radius: $stitch-radius-sm;
   }
 
-  ion-badge {
+  .upload-badge {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: $stitch-space-2;
+    right: $stitch-space-2;
+  }
+
+  .remove-image-btn {
+    position: absolute;
+    top: $stitch-space-2;
+    left: $stitch-space-2;
+    background: $stitch-overlay;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1;
+
+    ion-icon {
+      color: white;
+      font-size: 20px;
+    }
+
+    &:hover {
+      background: $stitch-overlay-heavy;
+    }
+  }
+}
+
+.image-actions {
+  display: flex;
+  flex-direction: column;
+  gap: $stitch-space-2;
+  padding: $stitch-space-2 0;
+
+  ion-button {
+    margin: 0;
+  }
+}
+
+.url-fallback {
+  margin-top: $stitch-space-2;
+
+  .url-toggle {
+    display: flex;
+    align-items: center;
+    gap: $stitch-space-2;
+    background: none;
+    border: none;
+    color: $stitch-primary;
+    font-size: $stitch-text-xs;
+    cursor: pointer;
+    padding: $stitch-space-1 0;
+
+    ion-icon {
+      font-size: 16px;
+    }
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .url-input-item {
+    margin-top: $stitch-space-2;
+    --padding-start: 0;
   }
 }

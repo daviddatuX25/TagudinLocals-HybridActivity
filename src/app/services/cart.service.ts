@@ -59,11 +59,14 @@ export class CartService {
     };
 
     this.http.post<ApiCartItem>(`${environment.apiUrl}/cart/${sessionId}`, payload).pipe(
-      tap(() => {
-        this.syncCartFromApi();
+      tap(apiItem => {
+        this.apiItemIdMap.set(String(apiItem.productId), apiItem.id);
+        this.cartItems = this.cartItems.some(i => i.product.id === String(apiItem.productId))
+          ? this.cartItems.map(i => i.product.id === String(apiItem.productId) ? { ...i, quantity: apiItem.quantity } : i)
+          : [...this.cartItems, { product: { ...product, id: String(apiItem.productId) }, quantity: apiItem.quantity }];
+        this.updateCart(true);
       }),
       catchError(() => {
-        // Graceful degradation: still update locally if API fails
         this.applyAddToCart(product, quantity);
         return [];
       })
@@ -75,15 +78,15 @@ export class CartService {
     const item = this.cartItems.find(i => i.product.id === productId);
 
     if (item) {
-      // Find the API item ID (the cart item's product.id maps to the API item)
       const apiItemId = this.findApiItemId(productId);
 
       this.http.delete(`${environment.apiUrl}/cart/${sessionId}/${apiItemId}`).pipe(
         tap(() => {
-          this.syncCartFromApi();
+          this.apiItemIdMap.delete(productId);
+          this.cartItems = this.cartItems.filter(i => i.product.id !== productId);
+          this.updateCart(true);
         }),
         catchError(() => {
-          // Graceful degradation: update locally
           this.cartItems = this.cartItems.filter(i => i.product.id !== productId);
           this.updateCart();
           return [];
@@ -103,11 +106,13 @@ export class CartService {
     const apiItemId = this.findApiItemId(productId);
 
     this.http.patch<ApiCartItem>(`${environment.apiUrl}/cart/${sessionId}/${apiItemId}`, { quantity }).pipe(
-      tap(() => {
-        this.syncCartFromApi();
+      tap(apiItem => {
+        this.cartItems = this.cartItems.map(i =>
+          i.product.id === productId ? { ...i, quantity: apiItem.quantity } : i
+        );
+        this.updateCart(true);
       }),
       catchError(() => {
-        // Graceful degradation: update locally
         this.cartItems = this.cartItems.map(i =>
           i.product.id === productId ? { ...i, quantity } : i
         );
@@ -152,7 +157,7 @@ export class CartService {
             quantity: apiItem.quantity
           };
         });
-        this.updateCart();
+        this.updateCart(true);
       }),
       catchError(() => {
         // If API fails, keep current cart
@@ -186,8 +191,11 @@ export class CartService {
     this.updateCart();
   }
 
-  private updateCart(): void {
+  private updateCart(fromApi = false): void {
     this.cartSubject.next([...this.cartItems]);
-    localStorage.setItem('cart', JSON.stringify(this.cartItems));
+    // WR-06: Only persist to localStorage after successful API sync
+    if (fromApi) {
+      localStorage.setItem('cart', JSON.stringify(this.cartItems));
+    }
   }
 }

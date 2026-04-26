@@ -1,13 +1,11 @@
 /*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
+ * App Global CSS — Pastel Light Theme
+ * Warm cream/beige aesthetic with proper contrast
+ * All Ionic variables are set in variables.scss.
+ * Component mixins are available via @use '../../theme/stitch/components'.
  */
+
+@use 'theme/stitch/stitch';
 
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
@@ -25,24 +23,16 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-/* @import '@ionic/angular/css/palettes/dark.system.css'; */
-
-/* Global Pastel Theme Styles */
+/* ── Global Styles ── */
 body {
-  background-color: var(--bg-page);
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--stitch-surface-0);
+  color: var(--stitch-text-primary);
 }
 
 ion-content {
-  --background: var(--bg-secondary);
+  --background: var(--stitch-surface-1);
+  --padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Safe area insets for mobile devices */
@@ -52,19 +42,16 @@ ion-header {
   }
 }
 
-ion-content {
-  --padding-bottom: env(safe-area-inset-bottom);
-}
-
 ion-footer {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
-/* Custom utility classes for pastel theme */
-.pastel-bg-primary { background-color: var(--pastel-primary) !important; }
-.pastel-bg-secondary { background-color: var(--pastel-secondary) !important; }
-.pastel-bg-accent { background-color: var(--pastel-accent) !important; }
+/* ── Utility Classes ── */
+.stitch-text-price { color: var(--stitch-price); font-weight: 700; }
+.stitch-text-muted { color: var(--stitch-text-tertiary); }
+.stitch-surface-card { background: var(--stitch-surface-2); border-radius: var(--stitch-radius-md); border: 1px solid var(--stitch-border); }
 
-.text-primary { color: var(--text-primary) !important; }
-.text-secondary { color: var(--text-secondary) !important; }
-.text-accent { color: var(--text-accent) !important; }
+/* ── Semantic Color Utilities ── */
+.text-primary { color: var(--stitch-text-primary) !important; }
+.text-secondary { color: var(--stitch-text-secondary) !important; }
+.text-accent { color: var(--stitch-price) !important; }

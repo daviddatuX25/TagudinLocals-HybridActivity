@@ -10,7 +10,11 @@
       "available": true,
       "rating": 4.8,
       "stock": 30,
-      "deliveryServices": ["1", "2", "3"]
+      "deliveryServices": [
+        "1",
+        "2",
+        "3"
+      ]
     },
     {
       "id": "2",
@@ -22,7 +26,10 @@
       "available": true,
       "rating": 4.5,
       "stock": 25,
-      "deliveryServices": ["1", "3"]
+      "deliveryServices": [
+        "1",
+        "3"
+      ]
     },
     {
       "id": "3",
@@ -34,7 +41,10 @@
       "available": true,
       "rating": 5,
       "stock": 15,
-      "deliveryServices": ["2", "4"]
+      "deliveryServices": [
+        "2",
+        "4"
+      ]
     },
     {
       "id": "4",
@@ -46,7 +56,12 @@
       "available": true,
       "rating": 4.7,
       "stock": 20,
-      "deliveryServices": ["1", "2", "3", "4"]
+      "deliveryServices": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ]
     },
     {
       "id": "5",
@@ -58,7 +73,10 @@
       "available": true,
       "rating": 4.6,
       "stock": 15,
-      "deliveryServices": ["1", "3"]
+      "deliveryServices": [
+        "1",
+        "3"
+      ]
     },
     {
       "id": "6",
@@ -70,7 +88,12 @@
       "available": true,
       "rating": 4.3,
       "stock": 20,
-      "deliveryServices": ["1", "2", "3", "4"]
+      "deliveryServices": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ]
     },
     {
       "id": "7",
@@ -82,7 +105,13 @@
       "available": true,
       "rating": 4.4,
       "stock": 40,
-      "deliveryServices": ["1", "2"]
+      "deliveryServices": [
+        "1",
+        "2"
+      ],
+      "availableDeliveryServices": [
+        "1"
+      ]
     },
     {
       "id": "8",
@@ -94,7 +123,16 @@
       "available": true,
       "rating": 4.8,
       "stock": 35,
-      "deliveryServices": ["1", "2", "3"]
+      "deliveryServices": [
+        "1",
+        "2",
+        "3"
+      ],
+      "availableDeliveryServices": [
+        "1",
+        "2",
+        "3"
+      ]
     },
     {
       "id": "9",
@@ -106,7 +144,12 @@
       "available": true,
       "rating": 4.9,
       "stock": 10,
-      "deliveryServices": ["1", "2", "3", "4"]
+      "deliveryServices": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ]
     },
     {
       "id": "10",
@@ -118,7 +161,11 @@
       "available": true,
       "rating": 4.6,
       "stock": 50,
-      "deliveryServices": ["1", "2", "3"]
+      "deliveryServices": [
+        "1",
+        "2",
+        "3"
+      ]
     },
     {
       "id": "11",
@@ -130,17 +177,38 @@
       "available": true,
       "rating": 4.7,
       "stock": 45,
-      "deliveryServices": ["1", "2", "3", "4"]
+      "deliveryServices": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ]
     }
   ],
-  "cart": [],
+  "cart": [
+    {
+      "id": "1776820425604",
+      "sessionId": "71f3c9fa-9a9a-4faa-b86f-4ea3a1240872",
+      "productId": "1",
+      "name": "Calamansi",
+      "price": 120,
+      "quantity": 1
+    }
+  ],
   "orders": [],
   "deliveryServices": [
     {
       "id": "1",
       "name": "QuickDeliver Express",
       "description": "Fast and reliable delivery service covering major areas in Ilocos Sur",
-      "coverageAreas": ["Sta. Cruz", "Candon", "Sta. Lucia", "Tagudin", "Sudipen", "Bangar"],
+      "coverageAreas": [
+        "Sta. Cruz",
+        "Candon",
+        "Sta. Lucia",
+        "Tagudin",
+        "Sudipen",
+        "Bangar"
+      ],
       "pricing": 50,
       "estimatedTime": "30-45 mins",
       "rating": 4.8,
@@ -151,7 +219,14 @@
       "id": "2",
       "name": "Ilocos Local Riders",
       "description": "Supporting local communities with affordable delivery",
-      "coverageAreas": ["Sta. Cruz", "Candon", "Sta. Lucia", "Tagudin", "Suyo", "Alilem"],
+      "coverageAreas": [
+        "Sta. Cruz",
+        "Candon",
+        "Sta. Lucia",
+        "Tagudin",
+        "Suyo",
+        "Alilem"
+      ],
       "pricing": 35,
       "estimatedTime": "45-60 mins",
       "rating": 4.5,
@@ -162,7 +237,14 @@
       "id": "3",
       "name": "Same Day Delivery Co.",
       "description": "Premium delivery service with same-day guarantee",
-      "coverageAreas": ["Sta. Cruz", "Candon", "Sta. Lucia", "Tagudin", "Sudipen", "Bangar"],
+      "coverageAreas": [
+        "Sta. Cruz",
+        "Candon",
+        "Sta. Lucia",
+        "Tagudin",
+        "Sudipen",
+        "Bangar"
+      ],
       "pricing": 75,
       "estimatedTime": "20-30 mins",
       "rating": 4.9,
@@ -170,5 +252,5 @@
       "available": true
     }
   ],
-  "adminPin": null
+  "adminPin": "$2b$10$F.26zaLbJgt4kqYLob1QaO2L/YAOP6T4RvIY03XM0gSyaQDNoJeGW"
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonSegment, IonSegmentButton,
   IonLabel, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton,
@@ -14,7 +15,7 @@ import {
   addOutline, createOutline, trashOutline, saveOutline, closeOutline,
   cartOutline, cubeOutline, bicycleOutline, checkmarkCircle, timeOutline,
   checkmarkOutline, closeCircleOutline, logOutOutline,
-  cameraOutline, imageOutline, lockClosedOutline, linkOutline
+  cameraOutline, imageOutline, lockClosedOutline, linkOutline, arrowBackOutline
 } from 'ionicons/icons';
 import { Camera } from '@capacitor/camera';
 import { AuthService } from '../services/auth.service';
@@ -99,17 +100,22 @@ export class AdminPage implements OnInit {
     private productService: ProductService,
     private deliveryService: DeliveryService,
     private orderService: OrderService,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) {
     addIcons({
       addOutline, createOutline, trashOutline, saveOutline, closeOutline,
       cartOutline, cubeOutline, bicycleOutline, checkmarkCircle, timeOutline,
       checkmarkOutline, closeCircleOutline, logOutOutline,
-      cameraOutline, imageOutline, lockClosedOutline, linkOutline
+      cameraOutline, imageOutline, lockClosedOutline, linkOutline, arrowBackOutline
     });
   }
 
   ngOnInit() {
+    this.productService.products$.subscribe(products => {
+      this.products = products;
+    });
+
     if (this.authService.isAdminVerified()) {
       this.showPinModal = false;
       this.loadData();
@@ -159,6 +165,10 @@ export class AdminPage implements OnInit {
     this.showPinModal = true;
   }
 
+  cancelAuth() {
+    this.router.navigate(['/products']);
+  }
+
   private handleSessionExpired() {
     this.authService.logout();
     this.pinMode = 'verify';
@@ -167,7 +177,7 @@ export class AdminPage implements OnInit {
   }
 
   loadData() {
-    this.products = this.productService.getProducts();
+    this.productService.fetchProducts();
     this.deliveryService.getAllServices().subscribe(services => {
       this.deliveryServices = services;
     });

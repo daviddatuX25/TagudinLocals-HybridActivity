@@ -58,15 +58,15 @@ export class OrderSuccessPage implements OnInit {
       this.orderService.getOrderById(orderId).subscribe(order => {
         this.order = order;
         if (!this.order) {
-          this.router.navigate(['/home']);
+          this.router.navigate(['/products']);
         }
       });
     } else {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/products']);
     }
   }
 
   goHome() {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/products']);
   }
 }

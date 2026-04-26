@@ -34,6 +34,11 @@
           {{ isPinLoading ? 'Verifying...' : (pinMode === 'setup' ? 'Set PIN' : 'Unlock') }}
         </ion-button>
 
+        <ion-button expand="block" fill="clear" (click)="cancelAuth()" [disabled]="isPinLoading" color="medium">
+          <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+          Cancel
+        </ion-button>
+
         <p class="pin-error" *ngIf="pinError">{{ pinError }}</p>
       </div>
     </ion-content>
@@ -301,24 +306,47 @@
             </ion-input>
           </ion-item>
           
-          <ion-item>
-            <ion-input
-              label="Image URL"
-              labelPlacement="stacked"
-              [(ngModel)]="newProduct.image"
-              placeholder="https://... or use camera/gallery">
-            </ion-input>
-            <ion-button slot="end" fill="clear" (click)="takePhoto()" [disabled]="isUploading" title="Take Photo">
-              <ion-icon slot="icon-only" name="camera-outline"></ion-icon>
-            </ion-button>
-            <ion-button slot="end" fill="clear" (click)="pickFromGallery()" [disabled]="isUploading" title="Choose from Gallery">
-              <ion-icon slot="icon-only" name="image-outline"></ion-icon>
-            </ion-button>
-          </ion-item>
+          <!-- Product Image Section -->
+          <div class="image-upload-section">
+            <ion-label class="image-label">Product Image</ion-label>
 
-          <div class="image-preview-container" *ngIf="imagePreview">
-            <img [src]="imagePreview" alt="Product image preview" class="image-preview-img" />
-            <ion-badge *ngIf="isUploading" color="warning">Uploading...</ion-badge>
+            <!-- Preview area when image exists -->
+            <div class="image-preview-container" *ngIf="imagePreview; else noImage">
+              <img [src]="imagePreview" alt="Product image preview" class="image-preview-img" />
+              <ion-badge *ngIf="isUploading" color="warning" class="upload-badge">Uploading...</ion-badge>
+              <button class="remove-image-btn" (click)="removeImage()" *ngIf="!isUploading" title="Remove image">
+                <ion-icon name="close-circle"></ion-icon>
+              </button>
+            </div>
+
+            <!-- No image state: show camera/gallery buttons -->
+            <ng-template #noImage>
+              <div class="image-actions">
+                <ion-button expand="block" color="primary" (click)="takePhoto()" [disabled]="isUploading">
+                  <ion-icon slot="start" name="camera-outline"></ion-icon>
+                  Take Photo
+                </ion-button>
+                <ion-button expand="block" fill="outline" (click)="pickFromGallery()" [disabled]="isUploading">
+                  <ion-icon slot="start" name="images-outline"></ion-icon>
+                  Choose from Gallery
+                </ion-button>
+              </div>
+            </ng-template>
+
+            <!-- Collapsible URL fallback -->
+            <div class="url-fallback" [class.expanded]="showUrlInput">
+              <button class="url-toggle" (click)="showUrlInput = !showUrlInput">
+                <ion-icon name="link-outline"></ion-icon>
+                {{ showUrlInput ? 'Hide URL input' : 'Or enter image URL manually' }}
+              </button>
+              <ion-item *ngIf="showUrlInput" lines="none" class="url-input-item">
+                <ion-input
+                  [(ngModel)]="newProduct.image"
+                  placeholder="https://example.com/image.jpg"
+                  (ionInput)="onImageUrlChange()">
+                </ion-input>
+              </ion-item>
+            </div>
           </div>
           
           <ion-item>

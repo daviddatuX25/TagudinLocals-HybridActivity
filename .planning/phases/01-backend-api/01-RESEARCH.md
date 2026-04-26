@@ -341,17 +341,15 @@ app.listen(PORT, () => {
 
 **Note:** A1 through A3 are verified through documentation or codebase reading. A4 is an assumption about the Phase 2 interface contract -- low risk since it's defined in the requirements.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Should db.json be committed to git?**
+1. **Should db.json be committed to git?** — RESOLVED: Commit db.json with seed data (products populated, cart empty). Add `server/db.json` to .gitignore AFTER initial commit so cart test data doesn't pollute the repo. For a lab exam, committing seed data is appropriate.
    - What we know: db.json contains seed product data. Cart data will accumulate during development.
-   - What's unclear: Whether accumulating cart data in a committed file is desirable, or if .gitignore should exclude it.
-   - Recommendation: Commit db.json with seed data (products populated, cart empty). Add `server/db.json` to .gitignore AFTER initial commit so cart test data doesn't pollute the repo. Alternatively, provide a `seed` npm script that resets db.json. For a lab exam, committing seed data is fine.
+   - Decision: Commit with seed data, gitignore after initial commit if needed.
 
-2. **Should the server use nodemon for development?**
+2. **Should the server use nodemon for development?** — RESOLVED: No. Do not add nodemon. The student can explain `node server.js`. Manual restart is acceptable for a 3-endpoint server during a lab exam.
    - What we know: Without nodemon, every code change requires manual server restart.
-   - What's unclear: Whether the convenience is worth an extra devDependency the student must explain.
-   - Recommendation: Don't add nodemon. The student can explain `node server.js`. If asked during grading "how do you handle auto-restart?", the honest answer "I restart manually for development" is fine for a 3-endpoint server.
+   - Decision: Plain `node server.js` start script. No dev dependencies.
 
 ## Environment Availability
 

@@ -1,3 +1,8 @@
+@use '../../theme/stitch/colors' as *;
+@use '../../theme/stitch/typography' as *;
+@use '../../theme/stitch/spacing' as *;
+@use '../../theme/stitch/components' as *;
+
 .success-container {
   text-align: center;
   max-width: 800px;
@@ -5,46 +10,44 @@
 }
 
 .success-icon-wrapper {
-  margin: 2rem 0;
+  margin: $stitch-space-8 0;
 }
 
 .success-icon {
   font-size: 120px;
-  color: var(--ion-color-success);
+  color: $stitch-success;
   animation: scaleIn 0.5s ease-out;
 }
 
 @keyframes scaleIn {
-  from {
-    transform: scale(0);
-  }
-  to {
-    transform: scale(1);
-  }
+  from { transform: scale(0); }
+  to { transform: scale(1); }
 }
 
 h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: var(--text-primary);
+  font-family: $stitch-font-family;
+  font-size: $stitch-text-3xl;
+  font-weight: $stitch-weight-bold;
+  margin-bottom: $stitch-space-2;
+  color: $stitch-text-primary;
 }
 
 .success-message {
-  font-size: 1rem;
-  color: var(--text-secondary);
-  margin-bottom: 2rem;
+  font-size: $stitch-text-base;
+  color: $stitch-text-secondary;
+  margin-bottom: $stitch-space-8;
 }
 
 .order-details-card {
+  @include card;
   text-align: left;
-  margin-bottom: 1rem;
-  
+  margin-bottom: $stitch-space-4;
+
   ion-card-title {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    
+    gap: $stitch-space-2;
+
     ion-icon {
       font-size: 24px;
     }
@@ -54,28 +57,28 @@ h1 {
 .detail-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
-  font-size: 0.95rem;
-  
+  margin-bottom: $stitch-space-3;
+  font-size: $stitch-text-sm;
+
   .label {
-    font-weight: 500;
-    color: var(--text-secondary);
+    font-weight: $stitch-weight-medium;
+    color: $stitch-text-secondary;
   }
-  
+
   .value {
-    font-weight: 600;
-    color: var(--text-primary);
+    font-weight: $stitch-weight-semibold;
+    color: $stitch-text-primary;
     text-align: right;
   }
-  
+
   &.total {
-    padding-top: 0.75rem;
-    margin-top: 0.5rem;
-    border-top: 2px solid var(--border-color);
-    font-size: 1.2rem;
-    
+    padding-top: $stitch-space-3;
+    margin-top: $stitch-space-2;
+    border-top: 2px solid $stitch-border;
+    font-size: $stitch-text-xl;
+
     .value {
-      color: var(--text-accent);
+      color: $stitch-price;
     }
   }
 }
@@ -83,21 +86,21 @@ h1 {
 .item-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
-  
+  margin-bottom: $stitch-space-2;
+  font-size: $stitch-text-sm;
+
   span:last-child {
-    font-weight: 600;
+    font-weight: $stitch-weight-semibold;
   }
 }
 
 .action-buttons {
-  margin: 2rem 0 1rem;
+  margin: $stitch-space-8 0 $stitch-space-4;
 }
 
 .info-text {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
+  font-size: $stitch-text-sm;
+  color: $stitch-text-tertiary;
   text-align: center;
-  line-height: 1.5;
+  line-height: $stitch-leading-normal;
 }
