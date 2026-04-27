@@ -515,7 +515,7 @@ export class AdminPage implements OnInit {
     if (err?.code === 'OS-PLUG-CAMR-0003') {
       message = 'Camera permission denied. Please enable camera access in settings.';
     } else if (err?.code === 'OS-PLUG-CAMR-0006') {
-      return; // User cancelled -- don't show toast
+      return;
     } else if (err?.code === 'OS-PLUG-CAMR-0007') {
       message = 'No camera available on this device';
     } else if (err?.message) {
@@ -524,5 +524,12 @@ export class AdminPage implements OnInit {
 
     this.errorMessage = message;
     this.showErrorToast = true;
+  }
+
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+    const fallback = img.parentElement?.querySelector('.product-image-fallback') as HTMLElement;
+    if (fallback) fallback.classList.add('show');
   }
 }

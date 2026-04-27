@@ -33,11 +33,12 @@
   <!-- Category Filter -->
   <ion-toolbar class="category-toolbar">
     <div class="category-chips">
-      <ion-chip 
-        *ngFor="let category of categories" 
+      <ion-chip
+        *ngFor="let category of categories"
         [class.chip-selected]="selectedCategory === category"
         (click)="selectCategory(category)">
-        <ion-label>{{ category }}</ion-label>
+        <ion-icon [name]="getCategoryIcon(category)" class="chip-icon"></ion-icon>
+        <ion-label class="chip-label">{{ category }}</ion-label>
       </ion-chip>
     </div>
   </ion-toolbar>
@@ -79,7 +80,13 @@
           <div class="available-badge" *ngIf="product.available && product.stock > 0">In Stock</div>
           <div class="out-of-stock-badge" *ngIf="product.stock === 0">Out of Stock</div>
 
-          <img [src]="product.image" class="product-img" [alt]="product.name" />
+          <div class="product-img-wrapper">
+            <img *ngIf="product.image" [src]="product.image" class="product-img" [alt]="product.name" (error)="onImageError($event)" />
+            <div class="product-img-fallback" [class.show]="!product.image">
+              <ion-icon name="image-outline"></ion-icon>
+              <span>No Image</span>
+            </div>
+          </div>
 
           <ion-card-header>
             <ion-card-title>{{ product.name }}</ion-card-title>

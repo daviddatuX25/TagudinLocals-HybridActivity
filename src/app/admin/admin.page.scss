@@ -92,11 +92,39 @@
   @include card;
   margin-bottom: $stitch-space-4;
 
+  .product-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 80px;
+    border-radius: $stitch-radius-sm;
+    overflow: hidden;
+    background: $stitch-surface-3;
+  }
+
   .product-image {
     width: 100%;
     height: 80px;
     object-fit: cover;
     border-radius: $stitch-radius-sm;
+  }
+
+  .product-image-fallback {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: $stitch-surface-3;
+    color: $stitch-text-tertiary;
+
+    &.show {
+      display: flex;
+    }
+
+    ion-icon {
+      font-size: 32px;
+      opacity: 0.5;
+    }
   }
 
   h3 {
@@ -386,26 +414,30 @@
 
   .remove-image-btn {
     position: absolute;
-    top: $stitch-space-2;
-    left: $stitch-space-2;
-    background: $stitch-overlay;
-    border: none;
+    top: $stitch-space-3;
+    right: $stitch-space-3;
+    background: rgba($stitch-error, 0.9);
+    border: 2px solid white;
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 1;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: all $stitch-transition-fast;
 
     ion-icon {
       color: white;
-      font-size: 20px;
+      font-size: 22px;
     }
 
     &:hover {
-      background: $stitch-overlay-heavy;
+      background: $stitch-error;
+      transform: scale(1.15);
+      box-shadow: 0 2px 12px rgba($stitch-error, 0.5);
     }
   }
 }

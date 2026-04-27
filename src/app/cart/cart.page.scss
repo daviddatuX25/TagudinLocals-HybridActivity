@@ -18,10 +18,32 @@
     width: 80px;
     height: 80px;
     margin-right: $stitch-space-4;
+    position: relative;
 
     img {
       object-fit: cover;
       border-radius: $stitch-radius-sm;
+    }
+  }
+
+  .cart-thumb-wrapper {
+    --size: 80px;
+    position: relative;
+  }
+
+  .cart-thumb-fallback {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $stitch-surface-3;
+    border-radius: $stitch-radius-sm;
+    color: $stitch-text-tertiary;
+
+    ion-icon {
+      font-size: 28px;
+      opacity: 0.5;
     }
   }
 

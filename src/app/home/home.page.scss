@@ -263,6 +263,47 @@ ion-card-title {
   }
 }
 
+.product-img-wrapper {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  border-radius: $stitch-radius-sm $stitch-radius-sm 0 0;
+  background: $stitch-surface-3;
+
+  .product-img {
+    @include product-image;
+    height: 150px;
+    display: block;
+  }
+
+  .product-img-fallback {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $stitch-space-2;
+    background: $stitch-surface-3;
+    color: $stitch-text-tertiary;
+
+    &.show {
+      display: flex;
+    }
+
+    ion-icon {
+      font-size: 48px;
+      opacity: 0.5;
+    }
+
+    span {
+      font-size: $stitch-text-xs;
+      opacity: 0.6;
+    }
+  }
+}
+
 .product-img {
   @include product-image;
   height: 150px;
@@ -467,6 +508,37 @@ ion-chip {
   }
 }
 
+.chip-icon {
+  font-size: 18px;
+  margin-right: 6px;
+  color: inherit;
+}
+
+.chip-label {
+  transition: opacity $stitch-transition-base;
+}
+
+// ── Mobile Category Chips (icon only) ──
+@media (max-width: 768px) {
+  .category-chips {
+    padding: $stitch-space-2;
+    justify-content: flex-start;
+  }
+
+  ion-chip {
+    min-width: 44px;
+    justify-content: center;
+  }
+
+  .chip-icon {
+    margin-right: 0;
+  }
+
+  .chip-label {
+    display: none !important;
+  }
+}
+
 // ── Availability Badges ──
 .available-badge {
   position: absolute;
@@ -587,13 +659,17 @@ ion-chip {
 
 // ── Responsive Images ──
 @media (min-width: 768px) {
-  .product-img {
+  .product-img-wrapper {
     height: 200px;
+
+    .product-img { height: 200px; }
   }
 }
 
 @media (min-width: 1024px) {
-  .product-img {
+  .product-img-wrapper {
     height: 220px;
+
+    .product-img { height: 220px; }
   }
 }

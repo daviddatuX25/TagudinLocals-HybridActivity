@@ -7,7 +7,8 @@ import {
   trash,
   add,
   remove,
-  cartOutline
+  cartOutline,
+  imageOutline
 } from 'ionicons/icons';
 import {
   IonHeader,
@@ -59,7 +60,7 @@ export class CartPage implements OnInit {
     private cartService: CartService,
     private router: Router
   ) {
-    addIcons({ arrowBack, trash, add, remove, cartOutline });
+    addIcons({ arrowBack, trash, add, remove, cartOutline, imageOutline });
   }
 
   ngOnInit() {
@@ -107,5 +108,10 @@ export class CartPage implements OnInit {
 
   getItemTotal(item: CartItem): number {
     return item.product.price * item.quantity;
+  }
+
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
   }
 }

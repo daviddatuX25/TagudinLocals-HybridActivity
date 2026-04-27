@@ -95,7 +95,12 @@
               <ion-card-title>{{ product.name }}</ion-card-title>
             </ion-card-header>
             <ion-card-content>
-              <img [src]="product.image" class="product-image" [alt]="product.name" />
+              <div class="product-image-wrapper">
+                <img *ngIf="product.image" [src]="product.image" class="product-image" [alt]="product.name" (error)="onImageError($event)" />
+                <div class="product-image-fallback" [class.show]="!product.image">
+                  <ion-icon name="image-outline"></ion-icon>
+                </div>
+              </div>
               <p class="product-description">{{ product.description }}</p>
               <div class="product-info">
                 <ion-badge [color]="product.available ? 'success' : 'danger'">

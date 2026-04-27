@@ -16,7 +16,21 @@ import {
   chevronDown,
   logOutOutline,
   settingsOutline,
-  refreshOutline
+  refreshOutline,
+  shirtOutline,
+  hardwareChipOutline,
+  homeOutline,
+  schoolOutline,
+  fastFoodOutline,
+  fishOutline,
+  cafeOutline,
+  nutritionOutline,
+  restaurantOutline,
+  beerOutline,
+  waterOutline,
+  leafOutline,
+  gridOutline,
+  imageOutline,
 } from 'ionicons/icons';
 import {
   IonHeader,
@@ -87,6 +101,22 @@ export class HomePage implements OnInit, OnDestroy {
   errorMessage: string | null = null;
   showErrorToast = false;
 
+  categoryIcons: Record<string, string> = {
+    'All': 'grid-outline',
+    'Fashion': 'shirt-outline',
+    'Gadgets': 'hardware-chip-outline',
+    'Home': 'home-outline',
+    'School': 'school-outline',
+    'Fast Food': 'fast-food-outline',
+    'Seafood': 'fish-outline',
+    'Bakery': 'cake-outline',
+    'Fruits': 'nutrition-outline',
+    'Food': 'restaurant-outline',
+    'Beverages': 'beer-outline',
+    'Water': 'water-outline',
+    'Groceries': 'leaf-outline',
+  };
+
   private loadingSub: Subscription;
   private errorSub: Subscription;
   private productsSub: Subscription;
@@ -110,7 +140,21 @@ export class HomePage implements OnInit, OnDestroy {
       chevronDown,
       logOutOutline,
       settingsOutline,
-      refreshOutline
+      refreshOutline,
+      shirtOutline,
+      hardwareChipOutline,
+      homeOutline,
+      schoolOutline,
+      fastFoodOutline,
+      fishOutline,
+      cafeOutline,
+      nutritionOutline,
+      restaurantOutline,
+      beerOutline,
+      waterOutline,
+      leafOutline,
+      gridOutline,
+      imageOutline,
     });
 
     this.loadingSub = this.productService.loading$.subscribe(loading => {
@@ -188,5 +232,16 @@ export class HomePage implements OnInit, OnDestroy {
 
   getStarArray(rating: number): number[] {
     return [1, 2, 3, 4, 5];
+  }
+
+  getCategoryIcon(category: string): string {
+    return this.categoryIcons[category] || 'pricetag-outline';
+  }
+
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+    const fallback = img.parentElement?.querySelector('.product-img-fallback') as HTMLElement;
+    if (fallback) fallback.style.display = 'flex';
   }
 }
