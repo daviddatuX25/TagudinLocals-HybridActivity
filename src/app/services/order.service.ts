@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
@@ -8,6 +8,8 @@ import { CartItem } from '../models/cart-item.model';
 import { DeliveryService as DeliveryServiceModel } from '../models/delivery-service.model';
 import { AuthService } from './auth.service';
 
+const ORDER_SYNC_MS = 15_000;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -16,7 +18,37 @@ export class OrderService {
   private ordersSubject = new BehaviorSubject<Order[]>(this.orders);
   public orders$ = this.ordersSubject.asObservable();
 
+  private syncTimer: any;
+  private isAdminPolling = false;
+
   constructor(private http: HttpClient, private authService: AuthService) {}
+
+  startAdminPolling() {
+    if (this.isAdminPolling) return;
+    this.isAdminPolling = true;
+    this.refreshOrders();
+    this.syncTimer = setInterval(() => this.refreshOrders(), ORDER_SYNC_MS);
+  }
+
+  stopAdminPolling() {
+    this.isAdminPolling = false;
+    if (this.syncTimer) {
+      clearInterval(this.syncTimer);
+      this.syncTimer = null;
+    }
+  }
+
+  private refreshOrders() {
+    this.http.get<Order[]>(`${environment.apiUrl}/api/admin/orders`, {
+      headers: this.authService.getPinHeader()
+    }).pipe(
+      tap(orders => {
+        this.orders = orders;
+        this.ordersSubject.next([...this.orders]);
+      }),
+      catchError(() => of([]))
+    ).subscribe();
+  }
 
   createOrder(
     customerName: string,

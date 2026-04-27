@@ -5,6 +5,8 @@ import { environment } from '../../environments/environment';
 import { Product } from '../models/product.model';
 import { AuthService } from './auth.service';
 
+const SYNC_INTERVAL_MS = 30_000;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,12 +21,18 @@ export class ProductService {
   private errorSubject = new BehaviorSubject<string | null>(null);
   public error$ = this.errorSubject.asObservable();
 
+  private syncTimer: any;
+
   constructor(private http: HttpClient, private authService: AuthService) {
     this.fetchProducts();
+    this.syncTimer = setInterval(() => this.fetchProducts(), SYNC_INTERVAL_MS);
+  }
+
+  ngOnDestroy() {
+    if (this.syncTimer) clearInterval(this.syncTimer);
   }
 
   fetchProducts(): void {
-    this.loadingSubject.next(true);
     this.errorSubject.next(null);
 
     this.http.get<Product[]>(`${environment.apiUrl}/products`).pipe(

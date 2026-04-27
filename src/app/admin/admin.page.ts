@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -41,7 +41,7 @@ import { environment } from '../../environments/environment';
     IonModal, IonCheckbox, IonChip, IonToast
   ]
 })
-export class AdminPage implements OnInit {
+export class AdminPage implements OnInit, OnDestroy {
   selectedSegment: string = 'products';
 
   // PIN Authentication
@@ -127,6 +127,10 @@ export class AdminPage implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+    this.orderService.stopAdminPolling();
+  }
+
   submitPin() {
     if (!this.pinInput || this.pinInput.length < 4) {
       this.pinError = 'PIN must be at least 4 digits';
@@ -181,7 +185,10 @@ export class AdminPage implements OnInit {
     this.deliveryService.getAllServices().subscribe(services => {
       this.deliveryServices = services;
     });
-    this.orders = this.orderService.getAllOrders();
+    this.orderService.getOrders().subscribe(orders => {
+      this.orders = orders;
+    });
+    this.orderService.startAdminPolling();
   }
 
   // ==================== PRODUCTS MANAGEMENT ====================
